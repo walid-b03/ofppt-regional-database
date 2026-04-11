@@ -42,6 +42,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    // Auth identifier
+    public function getAuthIdentifierName(): string
+    {
+        return 'code';
+    }
+
     // Relationships
     public function establishment(): BelongsTo
     {
@@ -63,9 +69,55 @@ class User extends Authenticatable
         return $this->hasOne(Establishment::class, 'head_id');
     }
 
-    // Auth identifier
-    public function getAuthIdentifierName(): string
+    // Helpers
+    public function isAdmin(): bool
     {
-        return 'code';
+        return $this->role === "admin";
+    }
+
+    public function isDRRG(): bool
+    {
+        return $this->headedRegion()->exists() && $this->role === "DRRG";
+    }
+
+    public function isDRCX(): bool
+    {
+        return $this->headedComplex()->exists() && $this->role === "DRCX";
+    }
+
+    public function isDRPD(): bool
+    {
+        return $this->headedEstablishment()->exists() && $this->role === "DRPD";
+    }
+
+    public function isAGAD(): bool
+    {
+        return $this->role === "AGAD";
+    }
+
+    // Scopes
+    public function scopeForSuperior($query, User $user)
+    {
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isDRRG()) {
+            return $query->whereHas('establishment.complex', function($q) use($user) {
+                $q->where('region_id', $user->establishment->complex->region_id);
+            });
+        }
+
+        if ($user->isDRCX()) {
+            return $query->whereHas('establishment', function($q) use($user) {
+                $q->where('complex_id', $user->establishment->complex_id);
+            });
+        }
+
+        if ($user->isDRPD()) {
+            return $query->where('establishment_id', $user->establishment_id);
+        }
+
+        return $query->where('id', $user->id);
     }
 }

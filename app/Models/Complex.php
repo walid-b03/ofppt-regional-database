@@ -17,6 +17,7 @@ class Complex extends Model
         'region_id',
     ];
 
+    // Relationships
     public function head(): BelongsTo
     {
         return $this->belongsTo(User::class, 'head_id');
@@ -30,5 +31,25 @@ class Complex extends Model
     public function establishments(): HasMany
     {
         return $this->hasMany(Establishment::class);
+    }
+
+    // Scope
+    public function scopeForUser($query, User $user)
+    {
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isDRRG()) {
+            return $query->whereHas('establishment.complex', function($q) use($user) {
+                $q->where('region_id', $user->establishment->complex->region_id);
+            });
+        }
+
+        if ($user->isDRCX()) {
+            return $query->where('id', $user->establishment->complex_id);
+        }
+
+        return $query->where('id', 0);
     }
 }

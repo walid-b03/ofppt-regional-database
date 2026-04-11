@@ -15,6 +15,7 @@ class Region extends Model
         'head_id',
     ];
 
+    // Relationships
     public function head(): BelongsTo
     {
         return $this->belongsTo(User::class, 'head_id');
@@ -23,5 +24,19 @@ class Region extends Model
     public function complexes(): HasMany
     {
         return $this->hasMany(Complex::class);
+    }
+
+    // Scopes
+    public function scopeForUser($query, User $user)
+    {
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isDRRG()) {
+            return $query->where('id', $user->establishment->complex->region_id);
+        }
+
+        return $query->where('id', 0);
     }
 }
