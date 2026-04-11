@@ -95,6 +95,12 @@ class User extends Authenticatable
         return $this->role === "AGAD";
     }
 
+    public function isFRMT(): bool
+    {
+        return $this->role === "FRMT";
+    }
+
+
     // Scopes
     public function scopeForSuperior($query, User $user)
     {
