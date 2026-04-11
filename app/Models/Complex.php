@@ -33,17 +33,15 @@ class Complex extends Model
         return $this->hasMany(Establishment::class);
     }
 
-    // Scope
-    public function scopeForUser($query, User $user)
+    // Scopes
+    public function scopeForHead($query, User $user)
     {
         if ($user->isAdmin()) {
             return $query;
         }
 
         if ($user->isDRRG()) {
-            return $query->whereHas('establishment.complex', function($q) use($user) {
-                $q->where('region_id', $user->establishment->complex->region_id);
-            });
+            return $query->where('region_id', $user->establishment->complex->region_id);
         }
 
         if ($user->isDRCX()) {

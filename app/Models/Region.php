@@ -27,7 +27,7 @@ class Region extends Model
     }
 
     // Scopes
-    public function scopeForUser($query, User $user)
+    public function scopeForHead($query, User $user)
     {
         if ($user->isAdmin()) {
             return $query;
