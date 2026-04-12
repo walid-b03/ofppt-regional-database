@@ -123,7 +123,7 @@ export default function Home() {
                                         id="code"
                                         required
                                         type="text"
-                                        placeholder="Ex : ofppt011"
+                                        placeholder="------"
                                         value={data.code}
                                         onChange={(e) => setData('code', e.target.value)}
                                         className="block w-full rounded-xl border border-stone-200 bg-white py-3 pl-11 pr-4 text-sm text-stone-900 placeholder:text-stone-400 shadow-sm transition-all duration-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 hover:border-stone-300"

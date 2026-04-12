@@ -19,7 +19,7 @@ class TrainingPolicy
 
     public function view(User $user, Training $training): bool
     {
-        return !$user->isFRMT() && ($user->establishment_id === $training->establishment_id
+        return !$user->isFRMT() && ($user?->establishment_id === $training->establishment_id
             || $user->headedComplex?->id === $training->establishment->complex_id
             || $user->headedRegion?->id === $training->establishment->complex->region_id
         );

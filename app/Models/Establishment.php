@@ -61,16 +61,16 @@ class Establishment extends Model
 
         if ($user->isDRRG()) {
             return $query->whereHas('complex', function($q) use($user) {
-                $q->where('region_id', $user->establishment->complex->region_id);
+                $q->where('region_id', $user->headedRegion->id);
             });
         }
 
         if ($user->isDRCX()) {
-            return $query->where('complex_id', $user->establishment->complex_id);
+            return $query->where('complex_id', $user->headedComplex->id);
         }
 
         if ($user->isDRPD()) {
-            return $query->where('id', $user->establishment_id);
+            return $query->where('id', $user->headedEstablishment->id);
         }
 
         return $query->where('id', 0);

@@ -19,7 +19,7 @@ class AssetPolicy
 
     public function view(User $user, Asset $asset): bool
     {
-        return !$user->isFRMT() && ($user->establishment_id === $asset->establishment_id
+        return !$user->isFRMT() && ($user?->establishment_id === $asset->establishment_id
             || $user->headedComplex?->id === $asset->establishment->complex_id
             || $user->headedRegion?->id === $asset->establishment->complex->region_id
         );

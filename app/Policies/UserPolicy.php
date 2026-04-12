@@ -19,8 +19,8 @@ class UserPolicy
     public function view(User $user, User $model): bool
     {
         return $user->headedEstablishment?->id === $model->establishment_id
-            || $user->headedComplex?->id === $model->establishment->complex_id
-            || $user->headedRegion?->id === $model->establishment->complex->region_id;
+            || $user->headedComplex?->id === $model->establishment?->complex_id
+            || $user->headedRegion?->id === $model->establishment?->complex?->region_id;
     }
 
     public function create(User $user): bool

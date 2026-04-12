@@ -19,7 +19,7 @@ class RoomPolicy
 
     public function view(User $user, Room $room): bool
     {
-        return !$user->isFRMT() && ($user->establishment_id === $room->establishment_id
+        return !$user->isFRMT() && ($user?->establishment_id === $room->establishment_id
             || $user->headedComplex?->id === $room->establishment->complex_id
             || $user->headedRegion?->id === $room->establishment->complex->region_id
         );

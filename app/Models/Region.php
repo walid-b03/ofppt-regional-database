@@ -36,7 +36,7 @@ class Region extends Model
         }
 
         if ($user->isDRRG()) {
-            return $query->where('id', $user->establishment->complex->region_id);
+            return $query->where('id', $user->headedRegion->id);
         }
 
         return $query->where('id', 0);

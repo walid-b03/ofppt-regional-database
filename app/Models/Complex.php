@@ -43,11 +43,11 @@ class Complex extends Model
         }
 
         if ($user->isDRRG()) {
-            return $query->where('region_id', $user->establishment->complex->region_id);
+            return $query->where('region_id', $user->headedRegion->id);
         }
 
         if ($user->isDRCX()) {
-            return $query->where('id', $user->establishment->complex_id);
+            return $query->where('id', $user->headedComplex->id);
         }
 
         return $query->where('id', 0);

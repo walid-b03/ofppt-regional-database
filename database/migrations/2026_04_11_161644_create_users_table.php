@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('role', ['admin', 'DRRG', 'DRCX', 'DRPD', 'AGAD', 'FRMT'])->nullable();
             $table->string('role_description')->nullable();
             $table->string('password');
-            $table->foreignId('establishment_id')->constrained();
+            $table->foreignId('establishment_id')->nullable()->constrained();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
