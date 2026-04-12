@@ -43,6 +43,21 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    // Mutators
+    public function setRoleAttribute($value): void
+    {
+        $this->attributes['role'] = $value;
+        $this->attributes['role_description'] = match ($value) {
+            'admin'  => 'admin',
+            'DRRG'   => 'Directeur Régional',
+            'DRCX'   => 'Directeur de Complexe',
+            'DRPD'   => 'Directeur d\'Établissement',
+            'AGAD'   => 'Agent Administratif',
+            'FRMT'   => 'Formateur',
+            default  => null,
+        };
+    }
+
     // Auth identifier
     public function getAuthIdentifierName(): string
     {

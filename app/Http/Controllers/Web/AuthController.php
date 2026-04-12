@@ -17,11 +17,9 @@ class AuthController extends Controller
         ]);
 
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()
-                ->onlyInput('code')
-                ->withErrors([
-                    'code' => __('Les identifiants fournis sont incorrects.'),
-                ]);
+            return back()->withErrors([
+                'code' => __('Les identifiants fournis sont incorrects.'),
+            ]);
         }
 
         $request->session()->regenerate();

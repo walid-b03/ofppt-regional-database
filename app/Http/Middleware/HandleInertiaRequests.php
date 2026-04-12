@@ -39,12 +39,18 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => fn() => $request->user() ? [
-                'user' => new UserResource($request->user()->load([
-                    'establishment',
-                    'headedEstablishment',
-                    'headedComplex',
+                'user' => tap($request->user()->load([
+                    'establishment.complex.region',
+                    'headedEstablishment.complex.region',
+                    'headedComplex.region',
                     'headedRegion',
-                ])),
+                ]), function ($user) {
+                    $user->makeHidden([
+                        'password', 'remember_token', 'deleted_at',
+                        'email_verified_at', 'two_factor_secret',
+                        'two_factor_recovery_codes', 'two_factor_confirmed_at',
+                    ])->append([]);
+                }),
             ] : null,
         ];
     }

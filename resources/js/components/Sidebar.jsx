@@ -1,6 +1,6 @@
 import { Link, usePage, router } from '@inertiajs/react';
 import { getNavItems, isActive } from '../lib/navigation';
-import { useState } from 'react';
+import { LogOut, ChevronRight } from 'lucide-react';
 
 export default function Sidebar({ open, onClose }) {
     const { auth } = usePage().props;
@@ -10,108 +10,122 @@ export default function Sidebar({ open, onClose }) {
 
     const navItems = getNavItems(role);
     const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-
-    const roleLabels = {
-        admin: 'Administrateur',
-        DRRG: 'Directeur Régional',
-        DRCX: 'Directeur de Complexe',
-        DRPD: 'Directeur d\'Établissement',
-        AGAD: 'Agent Administratif',
-        FRMT: 'Formateur',
-    };
+    const roleLabel = user.role_description ?? role;
 
     return (
         <>
             {/* Mobile overlay */}
             {open && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+                    className="fixed inset-0 z-40 bg-stone-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300"
                     onClick={onClose}
                 />
             )}
 
             <aside
                 className={`
-                    fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-stone-900 text-stone-300
+                    fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-stone-50
                     transform transition-transform duration-300 ease-in-out
-                    lg:translate-x-0
+                    lg:translate-x-0 border-r border-stone-200
                     ${open ? 'translate-x-0' : '-translate-x-full'}
                 `}
             >
-                {/* Logo */}
-                <div className="flex h-16 shrink-0 items-center justify-center border-b border-white/10 px-6">
+                {/* ── Header ── */}
+                <div className="flex h-20 shrink-0 items-center gap-3 border-b border-stone-200 bg-white px-5">
                     <img
                         src="/ofppt.svg"
                         alt="OFPPT"
-                        className="h-10 w-auto brightness-0 invert"
+                        className="h-20 w-auto"
                     />
+                    <div className="h-5 w-px bg-stone-200" />
+                    <span className="text-xs font-semibold tracking-wider uppercase text-stone-500">Portail</span>
                 </div>
 
-                {/* Role badge */}
-                <div className="px-5 pt-4 pb-3">
-                    <div className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-2.5">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-                            {name.charAt(0).toUpperCase() || '?'}
+                {/* ── User Card ── */}
+                <div className="px-4 pt-4">
+                    <Link
+                        href="/profile"
+                        onClick={() => onClose?.()}
+                        className="group flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-3 shadow-sm transition-all duration-200 hover:border-stone-300 hover:shadow"
+                    >
+                        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-bold text-white shadow-sm transition-transform duration-200 group-hover:scale-105">
+                            {name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
                         </div>
-                        <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-white">{name || 'Utilisateur'}</p>
-                            <p className="truncate text-xs text-stone-400">{roleLabels[role] ?? role}</p>
+                        <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-stone-900 group-hover:text-indigo-700 transition-colors">
+                                {name || 'Utilisateur'}
+                            </p>
+                            <div className="flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                <span className="truncate text-[11px] font-medium text-stone-500">{roleLabel} — {user.code}</span>
+                            </div>
                         </div>
-                    </div>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-stone-400 transition-colors group-hover:text-indigo-500" />
+                    </Link>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
-                    {navItems.map((item) => {
-                        const active = isActive(currentUrl, item.pattern);
-                        return (
-                            <Link
-                                key={item.route}
-                                href={route(item.route)}
-                                onClick={() => onClose?.()}
-                                className={`
-                                    flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
-                                    ${active
-                                        ? 'bg-indigo-600 text-white'
-                                        : 'text-stone-300 hover:bg-white/10 hover:text-white'
-                                    }
-                                `}
-                            >
-                                <svg
-                                    className="h-5 w-5 shrink-0"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
+                {/* ── Navigation ── */}
+                <nav className="flex-1 overflow-y-auto px-4 py-5">
+                    {navItems.length > 0 && (
+                        <>
+                            <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-stone-400">
+                                Navigation
+                            </p>
+                            <div className="space-y-0.5">
+                        {navItems.map((item) => {
+                            const active = isActive(currentUrl, item.href);
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    onClick={() => onClose?.()}
+                                    className={`
+                                        group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200
+                                        ${active
+                                            ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-inset ring-indigo-100'
+                                            : 'text-stone-600 hover:bg-white hover:text-stone-900 hover:shadow-sm'
+                                        }
+                                    `}
                                 >
-                                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                                </svg>
-                                {item.label}
-                            </Link>
-                        );
-                    })}
+                                    {/* Active indicator */}
+                                    {active && (
+                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-indigo-600" />
+                                    )}
+
+                                    {/* Icon container */}
+                                    <div className={`
+                                        flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200
+                                        ${active
+                                            ? 'bg-indigo-100 text-indigo-600'
+                                            : 'bg-stone-100 text-stone-400 group-hover:bg-stone-200 group-hover:text-stone-600'
+                                        }
+                                    `}>
+                                        <item.icon className="h-4 w-4" />
+                                    </div>
+
+                                    <span className="transition-colors">
+                                        {item.label}
+                                    </span>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                        </>
+                    )}
                 </nav>
 
-                {/* Footer */}
-                <div className="shrink-0 border-t border-white/10 px-3 py-4">
+                {/* ── Footer / Logout ── */}
+                <div className="shrink-0 border-t border-stone-200 bg-white px-4 py-4">
                     <button
                         onClick={() => {
                             onClose?.();
-                            router.post(route('logout'));
+                            router.post('/logout');
                         }}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-stone-300 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                        className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-stone-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
                     >
-                        <svg
-                            className="h-5 w-5 shrink-0"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 1 18 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 12 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3 0-3-3m0 0-3 3m3-3H6" />
-                        </svg>
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-stone-400 transition-all duration-200 group-hover:bg-red-100 group-hover:text-red-500">
+                            <LogOut className="h-4 w-4" />
+                        </div>
                         Déconnexion
                     </button>
                 </div>

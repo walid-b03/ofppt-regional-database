@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm, Head } from '@inertiajs/react';
+import { User, Lock, Eye, EyeOff, Check } from 'lucide-react';
 
 export default function Home() {
     const [showPassword, setShowPassword] = useState(false);
@@ -11,7 +12,7 @@ export default function Home() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(route('login'));
+        post('/login');
     }
 
     const error = errors.code || errors.password || Object.values(errors)[0];
@@ -117,7 +118,7 @@ export default function Home() {
                                 </label>
                                 <div className="group relative">
                                     <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-400 transition-colors group-focus-within:text-indigo-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        <User className="h-4.5 w-4.5" />
                                     </span>
                                     <input
                                         id="code"
@@ -141,7 +142,7 @@ export default function Home() {
                                 </label>
                                 <div className="group relative">
                                     <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-400 transition-colors group-focus-within:text-indigo-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                        <Lock className="h-4.5 w-4.5" />
                                     </span>
                                     <input
                                         id="password"
@@ -155,12 +156,12 @@ export default function Home() {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-medium text-stone-400 transition-colors hover:text-indigo-600 focus:outline-none"
+                                        className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 transition-colors hover:text-indigo-600 focus:outline-none"
                                     >
                                         {showPassword ? (
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                            <EyeOff className="h-4.5 w-4.5" />
                                         ) : (
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            <Eye className="h-4.5 w-4.5" />
                                         )}
                                     </button>
                                 </div>
@@ -177,18 +178,10 @@ export default function Home() {
                                             className="peer sr-only"
                                         />
                                         <div className="h-4.5 w-4.5 rounded-md border border-stone-300 bg-white shadow-sm transition-all duration-200 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500/20">
-                                            <svg
-                                                className="mx-auto mt-[3px] h-2.5 w-2.5 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            >
-                                                <polyline points="20 6 9 17 4 12" />
-                                            </svg>
+                                            <Check
+                                                className="mx-auto h-2.5 w-2.5 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100"
+                                                strokeWidth={4}
+                                            />
                                         </div>
                                     </div>
                                     <span className="text-sm text-stone-600 select-none">Se souvenir de moi</span>

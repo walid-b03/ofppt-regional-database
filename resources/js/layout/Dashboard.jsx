@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import Sidebar from '../components/Sidebar';
+import { Menu } from 'lucide-react';
 
 export default function Dashboard({ children, title }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -9,31 +10,22 @@ export default function Dashboard({ children, title }) {
     const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
 
     return (
-        <div className="min-h-screen bg-stone-100">
+        <div className="min-h-screen bg-stone-50">
             {/* Sidebar */}
             <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             {/* Main content */}
             <div className="lg:pl-72">
                 {/* Top bar */}
-                <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-stone-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+                <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-stone-200 bg-white/80 px-4 shadow-sm backdrop-blur-lg sm:gap-x-6 sm:px-6 lg:px-8">
                     {/* Mobile menu button */}
                     <button
                         type="button"
                         className="-m-2.5 p-2.5 text-stone-700 lg:hidden"
                         onClick={() => setSidebarOpen(true)}
                     >
-                        <span className="sr-only">Open sidebar</span>
-                        <svg
-                            className="h-6 w-6"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                        </svg>
+                        <span className="sr-only">Ouvrir le menu</span>
+                        <Menu className="h-6 w-6" />
                     </button>
 
                     {/* Separator */}
@@ -44,14 +36,14 @@ export default function Dashboard({ children, title }) {
                         {title}
                     </h1>
 
-                    {/* User info */}
-                    <div className="flex items-center gap-x-3">
+                    {/* User mini info */}
+                    <div className="flex items-center gap-x-2.5">
                         <div className="hidden sm:flex sm:flex-col sm:items-end">
-                            <p className="text-sm font-medium text-stone-900">{name || 'Utilisateur'}</p>
-                            <p className="text-xs text-stone-500">{user.role ?? ''}</p>
+                            <p className="text-sm font-medium text-stone-700">{name || 'Utilisateur'}</p>
+                            <p className="text-[11px] text-stone-400">{user.role_description ?? user.role ?? ''} — {user.code}</p>
                         </div>
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-                            {name.charAt(0).toUpperCase() || '?'}
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-xs font-bold text-white shadow-sm">
+                            {name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
                         </div>
                     </div>
                 </header>
