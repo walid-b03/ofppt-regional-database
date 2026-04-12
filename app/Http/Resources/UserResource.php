@@ -11,37 +11,37 @@ class UserResource extends JsonResource
     {
         $user = $request->user();
         $isSelf = $user?->id === $this->id;
-        $isHead = $user?->isAdmin()
+        $isSuperior = $user?->isAdmin()
             || $user?->isDRRG()
             || $user?->isDRCX()
             || $user?->isDRPD();
-        $canSeePasswords = $isHead || $isSelf;
+        $canSeePasswords = $isSuperior || $isSelf;
 
         return [
             'id' => $this->id,
             'code' => $this->code,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'cin' => $this->when($isHead, $this->cin),
-            'marital_status' => $this->when($isHead || $isSelf, $this->marital_status),
-            'children' => $this->when($isHead || $isSelf, $this->children),
+            'cin' => $this->when($isSuperior, $this->cin),
+            'marital_status' => $this->when($isSuperior || $isSelf, $this->marital_status),
+            'children' => $this->when($isSuperior || $isSelf, $this->children),
             'email' => $this->email,
             'phone' => $this->phone,
-            'address' => $this->when($isHead || $isSelf, $this->address),
-            'date_of_birth' => $this->when($isHead || $isSelf, $this->date_of_birth),
-            'date_of_recruitment' => $this->when($isHead, $this->date_of_recruitment),
-            'diploma' => $this->when($isHead, $this->diploma),
-            'rank' => $this->when($isHead, $this->rank),
-            'role' => $this->when($isHead, $this->role),
-            'role_description' => $this->when($isHead, $this->role_description),
+            'address' => $this->when($isSuperior || $isSelf, $this->address),
+            'date_of_birth' => $this->when($isSuperior || $isSelf, $this->date_of_birth),
+            'date_of_recruitment' => $this->when($isSuperior, $this->date_of_recruitment),
+            'diploma' => $this->when($isSuperior, $this->diploma),
+            'rank' => $this->when($isSuperior, $this->rank),
+            'role' => $this->when($isSuperior, $this->role),
+            'role_description' => $this->when($isSuperior, $this->role_description),
             'password' => $this->when($canSeePasswords, null),
             'establishment' => $this->whenLoaded('establishment', fn () => new EstablishmentResource($this->establishment)),
-            'establishment_id' => $this->when($isHead, $this->establishment_id),
+            'establishment_id' => $this->when($isSuperior, $this->establishment_id),
             'headed_region' => $this->whenLoaded('headedRegion', fn () => new RegionResource($this->headedRegion)),
             'headed_complex' => $this->whenLoaded('headedComplex', fn () => new ComplexResource($this->headedComplex)),
             'headed_establishment' => $this->whenLoaded('headedEstablishment', fn () => new EstablishmentResource($this->headedEstablishment)),
-            'created_at' => $this->when($isHead, $this->created_at),
-            'updated_at' => $this->when($isHead, $this->updated_at),
+            'created_at' => $this->when($isSuperior, $this->created_at),
+            'updated_at' => $this->when($isSuperior, $this->updated_at),
         ];
     }
 }

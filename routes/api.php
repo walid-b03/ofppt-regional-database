@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Identity
-    Route::get('user', [AuthController::class, 'me'])->name('user');
+    Route::get('user', [AuthController::class, 'user'])->name('user');
 
     // Read-only
     Route::get('regions', [RegionController::class, 'index'])->name('regions.index');
