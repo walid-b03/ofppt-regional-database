@@ -78,17 +78,17 @@ class User extends Authenticatable
 
     public function isDRRG(): bool
     {
-        return $this->headedRegion()->exists() && $this->role === "DRRG";
+        return $this->role === "DRRG" && $this->headedRegion !== null;
     }
 
     public function isDRCX(): bool
     {
-        return $this->headedComplex()->exists() && $this->role === "DRCX";
+        return $this->role === "DRCX" && $this->headedComplex !== null;
     }
 
     public function isDRPD(): bool
     {
-        return $this->headedEstablishment()->exists() && $this->role === "DRPD";
+        return $this->role === "DRPD" && $this->headedEstablishment !== null;
     }
 
     public function isAGAD(): bool
