@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasOne};
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, SoftDeletes;
 
     protected $fillable = [
         'code',

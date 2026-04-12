@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Concerns\ForUserScope;
 
 class Room extends Model
 {
-    use ForUserScope;
+    use SoftDeletes, ForUserScope;
 
     protected $fillable = [
         'code',

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->foreignId('establishment_id')->constrained();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('head_id')->nullable();
             $table->foreignId('region_id')->constrained();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

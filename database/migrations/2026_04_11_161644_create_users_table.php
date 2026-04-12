@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('establishment_id')->constrained();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
