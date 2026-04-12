@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\Establishment;
 use App\Models\User;
 
-class EstablichmentPolicy
+class EstablishmentPolicy
 {
     public function before(User $user): ?bool
     {
