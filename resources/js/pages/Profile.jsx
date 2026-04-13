@@ -19,7 +19,7 @@ const RANK_OPTIONS = [
 export default function Profile({ user: serverUser }) {
     const user = serverUser ?? {};
     const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-    const roleLabel = user.role_description ?? user.role ?? '';
+    const roleLabel = user.role_label ?? user.role ?? '';
 
     return (
         <Dashboard title="Mon Profil">
@@ -98,7 +98,7 @@ export default function Profile({ user: serverUser }) {
                             ['Diplôme', user.diploma],
                             ['Grade', user.rank && RANK_OPTIONS.find(o => o.value === user.rank)?.label],
                             ['Date de recrutement', formatDate(user.date_of_recruitment)],
-                            ['Description du rôle', user.role_description],
+                            ['Fonction', user.role_label],
                         ]}
                     />
                 </div>

@@ -40,7 +40,7 @@ export default function Dashboard({ children, title }) {
                     <div className="flex items-center gap-x-2.5">
                         <div className="hidden sm:flex sm:flex-col sm:items-end">
                             <p className="text-sm font-medium text-stone-700">{name || 'Utilisateur'}</p>
-                            <p className="text-[11px] text-stone-400">{user.role_description ?? user.role ?? ''} — {user.code}</p>
+                            <p className="text-[11px] text-stone-400">{user.role_label ?? user.role ?? ''} — {user.code}</p>
                         </div>
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-xs font-bold text-white shadow-sm">
                             {name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?'}

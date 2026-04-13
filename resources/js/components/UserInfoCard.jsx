@@ -23,7 +23,7 @@ export const ICON_MAP = {
     marital_status: 'heart', children: 'users', email: 'mail',
     phone: 'phone', address: 'mapPin', date_of_birth: 'calendar',
     date_of_recruitment: 'briefcase', diploma: 'award', rank: 'award',
-    role_description: 'briefcase',
+    role_label: 'briefcase',
 };
 
 export const LABEL_MAP = {
@@ -31,7 +31,7 @@ export const LABEL_MAP = {
     marital_status: 'État civil', children: 'Nombre d\'enfants',
     email: 'Email', phone: 'Téléphone', address: 'Adresse',
     date_of_birth: 'Date de naissance', date_of_recruitment: 'Date de recrutement',
-    diploma: 'Diplôme', rank: 'Grade', role_description: 'Description du rôle',
+    diploma: 'Diplôme', rank: 'Grade', role_label: 'Fonction',
 };
 
 export function formatDate(val) {

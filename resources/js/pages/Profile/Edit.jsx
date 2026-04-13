@@ -46,7 +46,7 @@ const LABEL_MAP = {
   date_of_recruitment: "Date de recrutement",
   diploma: "Diplôme",
   rank: "Grade",
-  role_description: "Description du rôle",
+  role_label: "Fonction",
 };
 
 const ICON_MAP = {
@@ -62,7 +62,7 @@ const ICON_MAP = {
   date_of_recruitment: Briefcase,
   diploma: Award,
   rank: Award,
-  role_description: Briefcase,
+  role_label: Briefcase,
 };
 
 /* --- Toast --- */
@@ -186,7 +186,7 @@ export default function ProfileEdit({ user: serverUser }) {
   const isAdmin = user.role === "admin";
   const name =
     `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
-  const roleLabel = user.role_description ?? user.role ?? "";
+  const roleLabel = user.role_label ?? user.role ?? "";
 
   const [pwOpen, setPwOpen] = useState(false);
   const [toast, setToast] = useState(null);
@@ -204,7 +204,7 @@ export default function ProfileEdit({ user: serverUser }) {
     date_of_recruitment: user.date_of_recruitment ?? "",
     diploma: user.diploma ?? "",
     rank: user.rank ?? "",
-    role_description: user.role_description ?? "",
+    role_label: user.role_label ?? "",
   });
 
   const fields = isAdmin
@@ -220,7 +220,7 @@ export default function ProfileEdit({ user: serverUser }) {
         "date_of_recruitment",
         "diploma",
         "rank",
-        "role_description",
+        "role_label",
       ]
     : [
         "marital_status",
@@ -231,7 +231,7 @@ export default function ProfileEdit({ user: serverUser }) {
         "date_of_recruitment",
         "diploma",
         "rank",
-        "role_description",
+        "role_label",
       ];
 
   function handleSubmit(e) {

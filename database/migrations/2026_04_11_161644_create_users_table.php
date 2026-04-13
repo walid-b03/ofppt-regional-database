@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('diploma')->nullable();
             $table->enum('rank', ['A1', 'A2', 'A3'])->nullable();
             $table->enum('role', ['admin', 'DRRG', 'DRCX', 'DRPD', 'AGAD', 'FRMT'])->nullable();
-            $table->string('role_description')->nullable();
+            $table->string('role_label')->nullable();
             $table->string('password');
             $table->foreignId('establishment_id')->nullable()->constrained();
             $table->rememberToken();

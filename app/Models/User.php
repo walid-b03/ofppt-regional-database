@@ -26,7 +26,7 @@ class User extends Authenticatable
         'diploma',
         'rank',
         'role',
-        'role_description',
+        'role_label',
         'password',
         'establishment_id',
     ];
@@ -47,11 +47,11 @@ class User extends Authenticatable
     public function setRoleAttribute($value): void
     {
         $this->attributes['role'] = $value;
-        $this->attributes['role_description'] = match ($value) {
+        $this->attributes['role_label'] = match ($value) {
             'admin'  => 'admin',
             'DRRG'   => 'Directeur Régional',
             'DRCX'   => 'Directeur de Complexe',
-            'DRPD'   => 'Directeur d\'Établissement',
+            'DRPD'   => 'Directeur Pédagogique',
             'AGAD'   => 'Agent Administratif',
             'FRMT'   => 'Formateur',
             default  => null,

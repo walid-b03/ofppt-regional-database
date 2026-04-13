@@ -37,11 +37,6 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = $request->user();
-        $isAdmin = $user->isAdmin();
-
-        $fields = $isAdmin
-            ? ['first_name', 'last_name', 'cin', 'marital_status', 'children', 'email', 'phone', 'address', 'date_of_birth', 'date_of_recruitment', 'diploma', 'rank', 'role_description']
-            : ['marital_status', 'children', 'email', 'phone', 'address', 'date_of_birth', 'date_of_recruitment', 'diploma', 'rank', 'role_description'];
 
         $rules = [
             'first_name'         => ['sometimes', 'required', 'string', 'max:255'],
@@ -56,12 +51,10 @@ class ProfileController extends Controller
             'date_of_recruitment' => ['sometimes', 'nullable', 'date'],
             'diploma'            => ['sometimes', 'nullable', 'string', 'max:255'],
             'rank'               => ['sometimes', 'nullable', 'in:A1,A2,A3'],
-            'role_description'   => ['sometimes', 'nullable', 'string', 'max:255'],
+            'role_label'   => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
 
-        $validated = $request->validate(
-            array_intersect_key($rules, array_flip($fields))
-        );
+        $validated = $request->validate($rules);
 
         $user->update($validated);
 

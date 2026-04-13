@@ -33,7 +33,7 @@ class UserResource extends JsonResource
             'diploma' => $this->when($isSuperior, $this->diploma),
             'rank' => $this->when($isSuperior, $this->rank),
             'role' => $this->when($isSuperior, $this->role),
-            'role_description' => $this->when($isSuperior, $this->role_description),
+            'role_label' => $this->when($isSuperior, $this->role_label),
             'password' => $this->when($canSeePasswords, null),
             'establishment' => $this->whenLoaded('establishment', fn () => new EstablishmentResource($this->establishment)),
             'establishment_id' => $this->when($isSuperior, $this->establishment_id),

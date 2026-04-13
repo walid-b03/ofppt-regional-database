@@ -10,7 +10,7 @@ export default function Sidebar({ open, onClose }) {
 
     const navItems = getNavItems(role);
     const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-    const roleLabel = user.role_description ?? role;
+    const roleLabel = user.role_label ?? role;
 
     return (
         <>
