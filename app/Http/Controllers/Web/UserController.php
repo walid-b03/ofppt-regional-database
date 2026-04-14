@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
@@ -70,7 +71,7 @@ class UserController extends Controller
 
         User::create($validated);
 
-        return back();
+        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
     }
 
     public function show(User $user)
@@ -131,7 +132,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return back();
+        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
     }
 
     public function destroy(User $user)

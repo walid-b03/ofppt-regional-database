@@ -6,8 +6,10 @@ use App\Models\User;
 
 class UserPolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $user, string $ability, ?User $model = null): ?bool
     {
+        if ($ability === 'delete' && $model && $user->id === $model->id) return false;
+
         return $user->isAdmin() ?: null;
     }
 

@@ -7,6 +7,7 @@ use App\Models\Region;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class RegionController extends Controller
@@ -47,11 +48,14 @@ class RegionController extends Controller
 
         Region::create($validated);
 
-        return back();
+        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
     }
 
-    public function show(Region $region)
+    public function show(Region $region = null)
     {
+        $user = Auth::user();
+        $region = $region ?? Region::where('id', $user->headedRegion?->id)->firstOrFail();
+
         $this->authorize('view', $region);
 
         $region->load(['head:id,code,first_name,last_name', 'complexes:id,code,name,region_id']);
@@ -61,8 +65,11 @@ class RegionController extends Controller
         ]);
     }
 
-    public function edit(Region $region)
+    public function edit(Region $region = null)
     {
+        $user = Auth::user();
+        $region = $region ?? Region::where('id', $user->headedRegion?->id)->firstOrFail();
+
         $this->authorize('update', $region);
 
         $users = User::where('role', 'DRRG')
@@ -77,8 +84,11 @@ class RegionController extends Controller
         ]);
     }
 
-    public function update(Request $request, Region $region)
+    public function update(Request $request, Region $region = null)
     {
+        $user = Auth::user();
+        $region = $region ?? Region::where('id', $user->headedRegion?->id)->firstOrFail();
+
         $this->authorize('update', $region);
 
         $validated = $request->validate([
@@ -91,7 +101,7 @@ class RegionController extends Controller
 
         $region->update($validated);
 
-        return back();
+        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
     }
 
     public function destroy(Region $region)

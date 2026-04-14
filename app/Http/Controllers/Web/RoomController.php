@@ -7,6 +7,7 @@ use App\Models\Establishment;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class RoomController extends Controller
@@ -52,7 +53,7 @@ class RoomController extends Controller
 
         Room::create($validated);
 
-        return back();
+        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
     }
 
     public function show(Room $room)
@@ -101,7 +102,7 @@ class RoomController extends Controller
 
         $room->update($validated);
 
-        return back();
+        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
     }
 
     public function destroy(Room $room)

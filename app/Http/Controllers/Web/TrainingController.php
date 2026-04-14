@@ -7,6 +7,7 @@ use App\Models\Establishment;
 use App\Models\Training;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class TrainingController extends Controller
@@ -56,7 +57,7 @@ class TrainingController extends Controller
 
         Training::create($validated);
 
-        return back();
+        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
     }
 
     public function show(Training $training)
@@ -109,7 +110,7 @@ class TrainingController extends Controller
 
         $training->update($validated);
 
-        return back();
+        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
     }
 
     public function destroy(Training $training)

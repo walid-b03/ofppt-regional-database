@@ -3,10 +3,11 @@ import { getNavItems, isActive } from '../lib/navigation';
 import { LogOut, ChevronRight } from 'lucide-react';
 
 export default function Sidebar({ open, onClose }) {
-    const { auth } = usePage().props;
+    const page = usePage();
+    const { auth } = page.props;
     const user = auth?.user ?? {};
     const role = user.role ?? 'FRMT';
-    const currentUrl = typeof window !== 'undefined' ? window.location.pathname : '';
+    const currentUrl = page.url;
 
     const navItems = getNavItems(role);
     const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
@@ -23,12 +24,7 @@ export default function Sidebar({ open, onClose }) {
             )}
 
             <aside
-                className={`
-                    fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-stone-50
-                    transform transition-transform duration-300 ease-in-out
-                    lg:translate-x-0 border-r border-stone-200
-                    ${open ? 'translate-x-0' : '-translate-x-full'}
-                `}
+                className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-stone-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 border-r border-stone-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
             >
                 {/* ── Header ── */}
                 <div className="flex h-20 shrink-0 items-center gap-3 border-b border-stone-200 bg-white px-5">
@@ -79,13 +75,10 @@ export default function Sidebar({ open, onClose }) {
                                     key={item.href}
                                     href={item.href}
                                     onClick={() => onClose?.()}
-                                    className={`
-                                        group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200
-                                        ${active
-                                            ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-inset ring-indigo-100'
-                                            : 'text-stone-600 hover:bg-white hover:text-stone-900 hover:shadow-sm'
-                                        }
-                                    `}
+                                    className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active
+                                        ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-inset ring-indigo-100'
+                                        : 'text-stone-600 hover:bg-white hover:text-stone-900 hover:shadow-sm'
+                                    }`}
                                 >
                                     {/* Active indicator */}
                                     {active && (
@@ -93,13 +86,10 @@ export default function Sidebar({ open, onClose }) {
                                     )}
 
                                     {/* Icon container */}
-                                    <div className={`
-                                        flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200
-                                        ${active
-                                            ? 'bg-indigo-100 text-indigo-600'
-                                            : 'bg-stone-100 text-stone-400 group-hover:bg-stone-200 group-hover:text-stone-600'
-                                        }
-                                    `}>
+                                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${active
+                                        ? 'bg-indigo-100 text-indigo-600'
+                                        : 'bg-stone-100 text-stone-400 group-hover:bg-stone-200 group-hover:text-stone-600'
+                                    }`}>
                                         <item.icon className="h-4 w-4" />
                                     </div>
 

@@ -7,6 +7,7 @@ use App\Models\Asset;
 use App\Models\Establishment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class AssetController extends Controller
@@ -55,7 +56,7 @@ class AssetController extends Controller
 
         Asset::create($validated);
 
-        return back();
+        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
     }
 
     public function show(Asset $asset)
@@ -107,7 +108,7 @@ class AssetController extends Controller
 
         $asset->update($validated);
 
-        return back();
+        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
     }
 
     public function destroy(Asset $asset)

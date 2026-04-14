@@ -17,7 +17,7 @@ import { Lock, Eye, EyeOff } from 'lucide-react';
  */
 export default function PasswordModal({ open, onClose, user, actionUrl }) {
     const { data, setData, put, processing, errors, reset } = useForm({
-        current_password: user ? '' : '',
+        current_password: '',
         password: '',
         password_confirmation: '',
     });
@@ -29,7 +29,7 @@ export default function PasswordModal({ open, onClose, user, actionUrl }) {
     function handleSubmit(e) {
         e.preventDefault();
         const url = actionUrl ?? (isReset
-            ? `/users/${user.id}/password-reset`
+            ? `/users/${user.id}/password`
             : '/profile/password'
         );
         put(url, {

@@ -8,6 +8,7 @@ use App\Models\Establishment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class EstablishmentController extends Controller
@@ -62,11 +63,14 @@ class EstablishmentController extends Controller
 
         Establishment::create($validated);
 
-        return back();
+        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
     }
 
-    public function show(Establishment $establishment)
+    public function show(Establishment $establishment = null)
     {
+        $user = Auth::user();
+        $establishment = $establishment ?? Establishment::where('id', $user->headedEstablishment?->id)->firstOrFail();
+
         $this->authorize('view', $establishment);
 
         $establishment->load([
@@ -80,11 +84,12 @@ class EstablishmentController extends Controller
         ]);
     }
 
-    public function edit(Establishment $establishment)
+    public function edit(Establishment $establishment = null)
     {
-        $this->authorize('update', $establishment);
-
         $user = Auth::user();
+        $establishment = $establishment ?? Establishment::where('id', $user->headedEstablishment?->id)->firstOrFail();
+
+        $this->authorize('update', $establishment);
 
         $complexes = match (true) {
             $user->isAdmin() => Complex::all(),
@@ -106,8 +111,11 @@ class EstablishmentController extends Controller
         ]);
     }
 
-    public function update(Request $request, Establishment $establishment)
+    public function update(Request $request, Establishment $establishment = null)
     {
+        $user = Auth::user();
+        $establishment = $establishment ?? Establishment::where('id', $user->headedEstablishment?->id)->firstOrFail();
+
         $this->authorize('update', $establishment);
 
         $validated = $request->validate([
@@ -124,7 +132,7 @@ class EstablishmentController extends Controller
 
         $establishment->update($validated);
 
-        return back();
+        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
     }
 
     public function destroy(Establishment $establishment)

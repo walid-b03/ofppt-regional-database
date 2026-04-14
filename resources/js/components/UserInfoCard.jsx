@@ -13,17 +13,12 @@ const ICO = {
     briefcase: Briefcase,
 };
 
-export const Icon = ({ name, className = 'h-4 w-4' }) => {
-    const C = ICO[name];
-    return C ? <C className={className} /> : null;
-};
-
 export const ICON_MAP = {
-    first_name: 'user', last_name: 'user', cin: 'hash',
-    marital_status: 'heart', children: 'users', email: 'mail',
-    phone: 'phone', address: 'mapPin', date_of_birth: 'calendar',
-    date_of_recruitment: 'briefcase', diploma: 'award', rank: 'award',
-    role_label: 'briefcase',
+    first_name: User, last_name: User, cin: Hash,
+    marital_status: Heart, children: Users, email: Mail,
+    phone: Phone, address: MapPin, date_of_birth: Calendar,
+    date_of_recruitment: Briefcase, diploma: Award, rank: Award,
+    role_label: Briefcase,
 };
 
 export const LABEL_MAP = {

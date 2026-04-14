@@ -8,6 +8,7 @@ use App\Models\Region;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class ComplexController extends Controller
@@ -57,11 +58,14 @@ class ComplexController extends Controller
 
         Complex::create($validated);
 
-        return back();
+        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
     }
 
-    public function show(Complex $complex)
+    public function show(Complex $complex = null)
     {
+        $user = Auth::user();
+        $complex = $complex ?? Complex::where('id', $user->headedComplex?->id)->firstOrFail();
+
         $this->authorize('view', $complex);
 
         $complex->load([
@@ -75,11 +79,12 @@ class ComplexController extends Controller
         ]);
     }
 
-    public function edit(Complex $complex)
+    public function edit(Complex $complex = null)
     {
-        $this->authorize('update', $complex);
-
         $user = Auth::user();
+        $complex = $complex ?? Complex::where('id', $user->headedComplex?->id)->firstOrFail();
+
+        $this->authorize('update', $complex);
 
         $regions = $user->isAdmin()
             ? Region::all()
@@ -98,8 +103,11 @@ class ComplexController extends Controller
         ]);
     }
 
-    public function update(Request $request, Complex $complex)
+    public function update(Request $request, Complex $complex = null)
     {
+        $user = Auth::user();
+        $complex = $complex ?? Complex::where('id', $user->headedComplex?->id)->firstOrFail();
+
         $this->authorize('update', $complex);
 
         $validated = $request->validate([
@@ -114,7 +122,7 @@ class ComplexController extends Controller
 
         $complex->update($validated);
 
-        return back();
+        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
     }
 
     public function destroy(Complex $complex)

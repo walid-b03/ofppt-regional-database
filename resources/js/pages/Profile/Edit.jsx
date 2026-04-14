@@ -2,68 +2,15 @@ import { useState, useEffect } from "react";
 import { Head, useForm, Link, usePage } from "@inertiajs/react";
 import Dashboard from "../../layout/Dashboard";
 import PasswordModal from "../../components/PasswordModal";
+import { ICON_MAP, LABEL_MAP } from "../../components/UserInfoCard";
+import { MARITAL_OPTIONS, RANK_OPTIONS } from "../../lib/constants";
 import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Hash,
-  Heart,
-  Users,
-  Award,
-  Briefcase,
-  Lock,
   ChevronDown,
   ArrowLeft,
   Check,
   X,
+  Lock,
 } from "lucide-react";
-
-const MARITAL_OPTIONS = [
-  { value: "single", label: "Célibataire" },
-  { value: "married", label: "Marié(e)" },
-  { value: "divorced", label: "Divorcé(e)" },
-  { value: "widowed", label: "Veuf(ve)" },
-];
-
-const RANK_OPTIONS = [
-  { value: "A1", label: "A1" },
-  { value: "A2", label: "A2" },
-  { value: "A3", label: "A3" },
-];
-
-const LABEL_MAP = {
-  first_name: "Prénom",
-  last_name: "Nom",
-  cin: "CIN",
-  marital_status: "État civil",
-  children: "Nombre d'enfants",
-  email: "Email",
-  phone: "Téléphone",
-  address: "Adresse",
-  date_of_birth: "Date de naissance",
-  date_of_recruitment: "Date de recrutement",
-  diploma: "Diplôme",
-  rank: "Grade",
-  role_label: "Fonction",
-};
-
-const ICON_MAP = {
-  first_name: User,
-  last_name: User,
-  cin: Hash,
-  marital_status: Heart,
-  children: Users,
-  email: Mail,
-  phone: Phone,
-  address: MapPin,
-  date_of_birth: Calendar,
-  date_of_recruitment: Briefcase,
-  diploma: Award,
-  rank: Award,
-  role_label: Briefcase,
-};
 
 /* --- Toast --- */
 function Toast({ message, onClose }) {

@@ -1,20 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
 import Dashboard from '../layout/Dashboard';
 import UserInfoCard, { formatDate } from '../components/UserInfoCard';
+import { MARITAL_OPTIONS, RANK_OPTIONS } from '../lib/constants';
 import { Globe, Pencil } from 'lucide-react';
-
-const MARITAL_OPTIONS = [
-    { value: 'single', label: 'Célibataire' },
-    { value: 'married', label: 'Marié(e)' },
-    { value: 'divorced', label: 'Divorcé(e)' },
-    { value: 'widowed', label: 'Veuf(ve)' },
-];
-
-const RANK_OPTIONS = [
-    { value: 'A1', label: 'A1' },
-    { value: 'A2', label: 'A2' },
-    { value: 'A3', label: 'A3' },
-];
 
 export default function Profile({ user: serverUser }) {
     const user = serverUser ?? {};

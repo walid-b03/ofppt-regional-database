@@ -1,7 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 export default function Modal({ open, onClose, title, description, children, footer, size = 'md' }) {
-    const panelRef = useRef();
 
     useEffect(() => {
         if (!open) return;
@@ -39,7 +38,6 @@ export default function Modal({ open, onClose, title, description, children, foo
 
             {/* Panel */}
             <div
-                ref={panelRef}
                 className={`relative w-full ${sizeClasses[size]} animate-[modalIn_0.25s_ease-out]`}
             >
                 <div className="overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-stone-900/5">
