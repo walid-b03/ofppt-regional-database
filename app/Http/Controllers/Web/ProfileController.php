@@ -13,7 +13,7 @@ class ProfileController extends Controller
 {
     public function show()
     {
-        return Inertia::render('Profile', [
+        return Inertia::render('Profile/Show', [
             'user' => auth()->user()->load(['establishment.complex.region']),
         ]);
     }
