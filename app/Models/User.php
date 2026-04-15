@@ -43,21 +43,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Mutators
-    public function setRoleAttribute($value): void
-    {
-        $this->attributes['role'] = $value;
-        $this->attributes['role_label'] = match ($value) {
-            'admin'  => 'admin',
-            'DRRG'   => 'Directeur Régional',
-            'DRCX'   => 'Directeur de Complexe',
-            'DRPD'   => 'Directeur Pédagogique',
-            'AGAD'   => 'Agent Administratif',
-            'FRMT'   => 'Formateur',
-            default  => null,
-        };
-    }
-
     // Auth identifier
     public function getAuthIdentifierName(): string
     {
@@ -116,6 +101,33 @@ class User extends Authenticatable
         return $this->role === "FRMT";
     }
 
+    public function setRoleAttribute($value): void
+    {
+        $this->attributes['role'] = $value;
+        $this->attributes['role_label'] = match ($value) {
+            'admin'  => 'admin',
+            'DRRG'   => 'Directeur Régional',
+            'DRCX'   => 'Directeur de Complexe',
+            'DRPD'   => 'Directeur Pédagogique',
+            'AGAD'   => 'Agent Administratif',
+            'FRMT'   => 'Formateur',
+            default  => null,
+        };
+    }
+
+    public function availableRoles(): array
+    {
+        $roles = [
+            'admin' => ['admin', 'DRRG', 'DRCX', 'DRPD', 'AGAD', 'FRMT'],
+            'DRRG'  => ['DRCX', 'DRPD', 'AGAD', 'FRMT'],
+            'DRCX'  => ['DRPD', 'AGAD', 'FRMT'],
+            'DRPD'  => ['AGAD', 'FRMT'],
+            'AGAD'  => [],
+            'FRMT'  => [],
+        ];
+
+        return $roles[$this->role];
+    }
 
     // Scopes
     public function scopeForSuperior($query, User $user)

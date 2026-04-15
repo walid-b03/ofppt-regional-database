@@ -7,122 +7,86 @@ use App\Models\Complex;
 use App\Models\Region;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ComplexController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $complexes = Complex::forHead($user)
-            ->with(['region:id,code,name', 'head:id,code,first_name,last_name'])
-            ->get();
-
         return Inertia::render('Complexes/Index', [
-            'complexes' => $complexes,
+            'complexes' => Complex::forHead(auth()->user())->with(['region', 'head'])->get(),
         ]);
     }
 
     public function create()
     {
-        $user = Auth::user();
-
-        $regions = $user->isAdmin()
-            ? Region::all()
-            : Region::where('id', $user->headedRegion->id)->get();
-
-        $users = User::where('role', 'DRCX')
-            ->with('headedComplex')
-            ->get();
+        $this->authorize('create', Complex::class);
 
         return Inertia::render('Complexes/Create', [
-            'regions' => $regions,
-            'availableHeads' => $users,
+            'availableRegions' => Region::forHead(auth()->user())->get(),
+            'availableHeads'   => User::where('role', 'DRCX')->whereDoesntHave('headedComplex')->get(),
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'code'       => ['required', 'string', 'max:255', 'unique:complexes,code'],
-            'name'       => ['required', 'string', 'max:255'],
-            'email'      => ['nullable', 'email', 'max:255'],
-            'phone'      => ['nullable', 'string', 'max:255'],
-            'location'   => ['nullable', 'string', 'max:255'],
-            'region_id'  => ['required', 'exists:regions,id'],
-            'head_id'    => ['nullable', 'exists:users,id'],
-        ]);
+        $this->authorize('create', Complex::class);
 
-        Complex::create($validated);
+        Complex::create($request->validate([
+            'code'      => ['required', 'string', 'max:255', 'unique:complexes,code'],
+            'name'      => ['required', 'string', 'max:255'],
+            'email'     => ['nullable', 'email', 'max:255'],
+            'phone'     => ['nullable', 'string', 'max:255'],
+            'city'      => ['nullable', 'string', 'max:255'],
+            'region_id' => ['required', 'exists:regions,id'],
+            'head_id'   => ['nullable', Rule::exists('users')->where('role', 'DRCX')],
+        ]));
 
-        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
+        return redirect()->action([ComplexController::class, 'index']);
     }
 
-    public function show(Complex $complex = null)
+    public function show(Complex $complex)
     {
-        $user = Auth::user();
-        $complex = $complex ?? Complex::where('id', $user->headedComplex?->id)->firstOrFail();
-
         $this->authorize('view', $complex);
 
-        $complex->load([
-            'region:id,code,name',
-            'head:id,code,first_name,last_name',
-            'establishments:id,code,name,complex_id',
-        ]);
-
         return Inertia::render('Complexes/Show', [
-            'complex' => $complex,
+            'complex' => $complex->load(['region', 'head', 'establishments']),
         ]);
     }
 
-    public function edit(Complex $complex = null)
+    public function edit(Complex $complex)
     {
-        $user = Auth::user();
-        $complex = $complex ?? Complex::where('id', $user->headedComplex?->id)->firstOrFail();
-
         $this->authorize('update', $complex);
 
-        $regions = $user->isAdmin()
-            ? Region::all()
-            : Region::where('id', $user->headedRegion->id)->get();
-
-        $users = User::where('role', 'DRCX')
-            ->with('headedComplex')
-            ->get();
-
-        $complex->load(['region:id,code,name', 'head:id,code,first_name,last_name']);
+        $availableHeads = User::where('role', 'DRCX')->where(
+            function($query) use ($complex) {
+                $query->whereDoesntHave('headedComplex')->orWhere('id', $complex->head_id);
+            }
+        )->get();
 
         return Inertia::render('Complexes/Edit', [
-            'complex' => $complex,
-            'regions' => $regions,
-            'availableHeads' => $users,
+            'complex'          => $complex->load(['region', 'head']),
+            'availableRegions' => Region::forHead(auth()->user())->get(),
+            'availableHeads'   => $availableHeads,
         ]);
     }
 
-    public function update(Request $request, Complex $complex = null)
+    public function update(Request $request, Complex $complex)
     {
-        $user = Auth::user();
-        $complex = $complex ?? Complex::where('id', $user->headedComplex?->id)->firstOrFail();
-
         $this->authorize('update', $complex);
 
-        $validated = $request->validate([
-            'code'       => ['sometimes', 'required', 'string', 'max:255', 'unique:complexes,code,'.$complex->id],
-            'name'       => ['sometimes', 'required', 'string', 'max:255'],
-            'email'      => ['nullable', 'email', 'max:255'],
-            'phone'      => ['nullable', 'string', 'max:255'],
-            'location'   => ['nullable', 'string', 'max:255'],
-            'region_id'  => ['sometimes', 'required', 'exists:regions,id'],
-            'head_id'    => ['nullable', 'exists:users,id'],
-        ]);
+        $complex->update($request->validate([
+            'code'      => ['sometimes', 'required', 'string', 'max:255', Rule::unique('complexes')->ignore($complex->id)],
+            'name'      => ['sometimes', 'required', 'string', 'max:255'],
+            'email'     => ['nullable', 'email', 'max:255'],
+            'phone'     => ['nullable', 'string', 'max:255'],
+            'city'      => ['nullable', 'string', 'max:255'],
+            'region_id' => ['sometimes', 'required', 'exists:regions,id'],
+            'head_id'   => ['nullable', Rule::exists('users')->where('role', 'DRCX')],
+        ]));
 
-        $complex->update($validated);
-
-        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
+        return redirect()->action([ComplexController::class, 'index']);
     }
 
     public function destroy(Complex $complex)

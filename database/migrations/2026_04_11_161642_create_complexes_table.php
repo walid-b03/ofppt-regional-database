@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->string('location')->nullable();
+            $table->string('city')->nullable();
             $table->foreignId('head_id')->nullable();
             $table->foreignId('region_id')->constrained();
             $table->timestamps();

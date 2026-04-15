@@ -6,102 +6,80 @@ use App\Http\Controllers\Controller;
 use App\Models\Region;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class RegionController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $regions = Region::forHead($user)
-            ->with('head:id,code,first_name,last_name')
-            ->get();
-
         return Inertia::render('Regions/Index', [
-            'regions' => $regions,
+            'regions' => Region::forHead(auth()->user())->with(['head'])->get(),
         ]);
     }
 
     public function create()
     {
-        $users = User::where('role', 'DRRG')
-            ->with('headedRegion')
-            ->get();
+        $this->authorize('create', Region::class);
 
         return Inertia::render('Regions/Create', [
-            'availableHeads' => $users,
+            'availableHeads' => User::where('role', 'DRRG')->whereDoesntHave('headedRegion')->get(),
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'code'     => ['required', 'string', 'max:255', 'unique:regions,code'],
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['nullable', 'email', 'max:255'],
-            'phone'    => ['nullable', 'string', 'max:255'],
-            'head_id'  => ['nullable', 'exists:users,id'],
-        ]);
+        $this->authorize('create', Region::class);
 
-        Region::create($validated);
+        Region::create($request->validate([
+            'code'    => ['required', 'string', 'max:255', 'unique:regions,code'],
+            'name'    => ['required', 'string', 'max:255'],
+            'email'   => ['nullable', 'email', 'max:255'],
+            'phone'   => ['nullable', 'string', 'max:255'],
+            'head_id' => ['nullable', Rule::exists('users')->where('role', 'DRRG')],
+        ]));
 
-        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
+        return redirect()->action([RegionController::class, 'index']);
     }
 
-    public function show(Region $region = null)
+    public function show(Region $region)
     {
-        $user = Auth::user();
-        $region = $region ?? Region::where('id', $user->headedRegion?->id)->firstOrFail();
-
         $this->authorize('view', $region);
 
-        $region->load(['head:id,code,first_name,last_name', 'complexes:id,code,name,region_id']);
-
         return Inertia::render('Regions/Show', [
-            'region' => $region,
+            'region' => $region->load(['head', 'complexes']),
         ]);
     }
 
-    public function edit(Region $region = null)
+    public function edit(Region $region)
     {
-        $user = Auth::user();
-        $region = $region ?? Region::where('id', $user->headedRegion?->id)->firstOrFail();
-
         $this->authorize('update', $region);
 
-        $users = User::where('role', 'DRRG')
-            ->with('headedRegion')
-            ->get();
-
-        $region->load('head:id,code,first_name,last_name');
+        $availableHeads = User::where('role', 'DRRG')->where(
+            function($query) use ($region) {
+                $query->whereDoesntHave('headedRegion')->orWhere('id', $region->head_id);
+            }
+        )->get();
 
         return Inertia::render('Regions/Edit', [
-            'region' => $region,
-            'availableHeads' => $users,
+            'region'         => $region->load(['head']),
+            'availableHeads' => $availableHeads,
         ]);
     }
 
-    public function update(Request $request, Region $region = null)
+    public function update(Request $request, Region $region)
     {
-        $user = Auth::user();
-        $region = $region ?? Region::where('id', $user->headedRegion?->id)->firstOrFail();
-
         $this->authorize('update', $region);
 
-        $validated = $request->validate([
-            'code'     => ['sometimes', 'required', 'string', 'max:255', 'unique:regions,code,'.$region->id],
-            'name'     => ['sometimes', 'required', 'string', 'max:255'],
-            'email'    => ['nullable', 'email', 'max:255'],
-            'phone'    => ['nullable', 'string', 'max:255'],
-            'head_id'  => ['nullable', 'exists:users,id'],
-        ]);
+        $region->update($request->validate([
+            'code'    => ['sometimes', 'required', 'string', 'max:255', Rule::unique('regions')->ignore($region->id)],
+            'name'    => ['sometimes', 'required', 'string', 'max:255'],
+            'email'   => ['nullable', 'email', 'max:255'],
+            'phone'   => ['nullable', 'string', 'max:255'],
+            'head_id' => ['nullable', Rule::exists('users')->where('role', 'DRRG')],
+        ]));
 
-        $region->update($validated);
-
-        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
+        return redirect()->action([RegionController::class, 'index']);
     }
 
     public function destroy(Region $region)

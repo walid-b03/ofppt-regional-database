@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -16,7 +15,7 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (!auth()->attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors([
                 'code' => __('Les identifiants fournis sont incorrects.'),
             ]);
@@ -31,7 +30,7 @@ class AuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        auth()->guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

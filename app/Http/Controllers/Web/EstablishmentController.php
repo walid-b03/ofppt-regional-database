@@ -7,119 +7,79 @@ use App\Models\Complex;
 use App\Models\Establishment;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class EstablishmentController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $establishments = Establishment::forHead($user)
-            ->with(['complex:id,code,name', 'head:id,code,first_name,last_name'])
-            ->get();
-
         return Inertia::render('Establishments/Index', [
-            'establishments' => $establishments,
+            'establishments' => Establishment::forHead(auth()->user())->with(['complex', 'head'])->get(),
         ]);
     }
 
     public function create()
     {
-        $user = Auth::user();
-
-        $complexes = match (true) {
-            $user->isAdmin() => Complex::all(),
-            $user->isDRRG()  => Complex::where('region_id', $user->headedRegion->id)->get(),
-            $user->isDRCX()  => Complex::where('id', $user->headedComplex->id)->get(),
-            default          => collect(),
-        };
-
-        $users = User::where('role', 'DRPD')
-            ->with('headedEstablishment')
-            ->get();
+        $this->authorize('create', Establishment::class);
 
         return Inertia::render('Establishments/Create', [
-            'complexes' => $complexes,
-            'availableHeads' => $users,
+            'availableComplexes' => Complex::forHead(auth()->user())->get(),
+            'availableHeads'     => User::where('role', 'DRPD')->whereDoesntHave('headedEstablishment')->get(),
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'code'         => ['required', 'string', 'max:255', 'unique:establishments,code'],
-            'name'         => ['required', 'string', 'max:255'],
-            'sector'       => ['nullable', 'string', 'max:255'],
-            'type'         => ['nullable', 'string', 'max:255'],
-            'email'        => ['nullable', 'email', 'max:255'],
-            'phone'        => ['nullable', 'string', 'max:255'],
-            'address'      => ['nullable', 'string', 'max:255'],
-            'complex_id'   => ['required', 'exists:complexes,id'],
-            'head_id'      => ['nullable', 'exists:users,id'],
-        ]);
+        $this->authorize('create', Establishment::class);
 
-        Establishment::create($validated);
+        Establishment::create($request->validate([
+            'code'          => ['required', 'string', 'max:255', 'unique:establishments,code'],
+            'name'          => ['required', 'string', 'max:255'],
+            'sector'        => ['nullable', 'string', 'max:255'],
+            'type'          => ['nullable', 'string', 'max:255'],
+            'email'         => ['nullable', 'email', 'max:255'],
+            'phone'         => ['nullable', 'string', 'max:255'],
+            'address'       => ['nullable', 'string', 'max:255'],
+            'complex_id'    => ['required', 'exists:complexes,id'],
+            'head_id'       => ['nullable', Rule::exists('users')->where('role', 'DRPD')],
+        ]));
 
-        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
+        return redirect()->action([EstablishmentController::class, 'index']);
     }
 
-    public function show(Establishment $establishment = null)
+    public function show(Establishment $establishment)
     {
-        $user = Auth::user();
-        $establishment = $establishment ?? Establishment::where('id', $user->headedEstablishment?->id)->firstOrFail();
-
         $this->authorize('view', $establishment);
 
-        $establishment->load([
-            'complex:id,code,name,region_id',
-            'head:id,code,first_name,last_name',
-            'users:id,code,first_name,last_name,role,establishment_id',
-        ]);
-
         return Inertia::render('Establishments/Show', [
-            'establishment' => $establishment,
+            'establishment' => $establishment->load(['complex', 'head', 'users', 'rooms', 'assets', 'trainings']),
         ]);
     }
 
-    public function edit(Establishment $establishment = null)
+    public function edit(Establishment $establishment)
     {
-        $user = Auth::user();
-        $establishment = $establishment ?? Establishment::where('id', $user->headedEstablishment?->id)->firstOrFail();
-
         $this->authorize('update', $establishment);
 
-        $complexes = match (true) {
-            $user->isAdmin() => Complex::all(),
-            $user->isDRRG()  => Complex::where('region_id', $user->headedRegion->id)->get(),
-            $user->isDRCX()  => Complex::where('id', $user->headedComplex->id)->get(),
-            default          => collect(),
-        };
-
-        $users = User::where('role', 'DRPD')
-            ->with('headedEstablishment')
-            ->get();
-
-        $establishment->load(['complex:id,code,name', 'head:id,code,first_name,last_name']);
+        $availableHeads = User::where('role', 'DRPD')->where(
+            function($query) use ($establishment) {
+                $query->whereDoesntHave('headedEstablishment')->orWhere('id', $establishment->head_id);
+            }
+        )->get();
 
         return Inertia::render('Establishments/Edit', [
-            'establishment' => $establishment,
-            'complexes' => $complexes,
-            'availableHeads' => $users,
+            'establishment'    => $establishment->load(['complex', 'head']),
+            'availableComplexes' => Complex::forHead(auth()->user())->get(),
+            'availableHeads'   => $availableHeads,
         ]);
     }
 
-    public function update(Request $request, Establishment $establishment = null)
+    public function update(Request $request, Establishment $establishment)
     {
-        $user = Auth::user();
-        $establishment = $establishment ?? Establishment::where('id', $user->headedEstablishment?->id)->firstOrFail();
-
         $this->authorize('update', $establishment);
 
-        $validated = $request->validate([
-            'code'         => ['sometimes', 'required', 'string', 'max:255', 'unique:establishments,code,'.$establishment->id],
+        $establishment->update($request->validate([
+            'code'         => ['sometimes', 'required', 'string', 'max:255', Rule::unique('establishments')->ignore($establishment->id)],
             'name'         => ['sometimes', 'required', 'string', 'max:255'],
             'sector'       => ['nullable', 'string', 'max:255'],
             'type'         => ['nullable', 'string', 'max:255'],
@@ -127,12 +87,10 @@ class EstablishmentController extends Controller
             'phone'        => ['nullable', 'string', 'max:255'],
             'address'      => ['nullable', 'string', 'max:255'],
             'complex_id'   => ['sometimes', 'required', 'exists:complexes,id'],
-            'head_id'      => ['nullable', 'exists:users,id'],
-        ]);
+            'head_id'      => ['nullable', Rule::exists('users')->where('role', 'DRPD')],
+        ]));
 
-        $establishment->update($validated);
-
-        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
+        return redirect()->action([EstablishmentController::class, 'index']);
     }
 
     public function destroy(Establishment $establishment)

@@ -6,45 +6,32 @@ use App\Http\Controllers\Controller;
 use App\Models\Establishment;
 use App\Models\Training;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class TrainingController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $trainings = Training::forUser($user)
-            ->with(['establishment:id,code,name'])
-            ->get();
-
         return Inertia::render('Trainings/Index', [
-            'trainings' => $trainings,
+            'trainings' => Training::forUser(auth()->user())->with(['establishment'])->get(),
         ]);
     }
 
     public function create()
     {
-        $user = Auth::user();
-
-        $establishments = match (true) {
-            $user->isAdmin() => Establishment::all(),
-            $user->isDRRG()  => Establishment::whereHas('complex', fn($q) => $q->where('region_id', $user->headedRegion->id))->get(),
-            $user->isDRCX()  => Establishment::where('complex_id', $user->headedComplex->id)->get(),
-            $user->isDRPD() || $user->isAGAD() => collect([$user->headedEstablishment]),
-            default          => collect(),
-        };
+        $this->authorize('create', Training::class);
 
         return Inertia::render('Trainings/Create', [
-            'establishments' => $establishments,
+            'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $this->authorize('create', Training::class);
+
+        Training::create($request->validate([
             'code'             => ['required', 'string', 'max:255', 'unique:trainings,code'],
             'name'             => ['required', 'string', 'max:255'],
             'type'             => ['nullable', 'in:Diplomante,Qualifiante'],
@@ -53,21 +40,17 @@ class TrainingController extends Controller
             'duration'         => ['nullable', 'integer', 'min:0'],
             'description'      => ['nullable', 'string'],
             'establishment_id' => ['required', 'exists:establishments,id'],
-        ]);
+        ]));
 
-        Training::create($validated);
-
-        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
+        return redirect()->action([TrainingController::class, 'index']);
     }
 
     public function show(Training $training)
     {
         $this->authorize('view', $training);
 
-        $training->load(['establishment:id,code,name']);
-
         return Inertia::render('Trainings/Show', [
-            'training' => $training,
+            'training' => $training->load(['establishment']),
         ]);
     }
 
@@ -75,21 +58,9 @@ class TrainingController extends Controller
     {
         $this->authorize('update', $training);
 
-        $user = Auth::user();
-
-        $establishments = match (true) {
-            $user->isAdmin() => Establishment::all(),
-            $user->isDRRG()  => Establishment::whereHas('complex', fn($q) => $q->where('region_id', $user->headedRegion->id))->get(),
-            $user->isDRCX()  => Establishment::where('complex_id', $user->headedComplex->id)->get(),
-            $user->isDRPD() || $user->isAGAD() => collect([$user->headedEstablishment]),
-            default          => collect(),
-        };
-
-        $training->load(['establishment:id,code,name']);
-
         return Inertia::render('Trainings/Edit', [
-            'training' => $training,
-            'establishments' => $establishments,
+            'training' => $training->load(['establishment']),
+            'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -97,8 +68,8 @@ class TrainingController extends Controller
     {
         $this->authorize('update', $training);
 
-        $validated = $request->validate([
-            'code'             => ['sometimes', 'required', 'string', 'max:255', 'unique:trainings,code,'.$training->id],
+        $training->update($request->validate([
+            'code'             => ['sometimes', 'required', 'string', 'max:255', Rule::unique('trainings')->ignore($training->id)],
             'name'             => ['sometimes', 'required', 'string', 'max:255'],
             'type'             => ['nullable', 'in:Diplomante,Qualifiante'],
             'level'            => ['nullable', 'in:Qualification,Spécialisation,Technicien,Technicien Spécialisé'],
@@ -106,11 +77,9 @@ class TrainingController extends Controller
             'duration'         => ['nullable', 'integer', 'min:0'],
             'description'      => ['nullable', 'string'],
             'establishment_id' => ['sometimes', 'required', 'exists:establishments,id'],
-        ]);
+        ]));
 
-        $training->update($validated);
-
-        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
+        return redirect()->action([TrainingController::class, 'index']);
     }
 
     public function destroy(Training $training)

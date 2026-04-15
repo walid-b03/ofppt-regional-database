@@ -6,9 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Establishment;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
@@ -16,72 +15,66 @@ class UserController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $users = User::forSuperior($user)
-            ->with(['establishment:id,code,name', 'headedEstablishment', 'headedComplex', 'headedRegion'])
-            ->get();
-
         return Inertia::render('Users/Index', [
-            'users' => $users,
+            'users' => User::forSuperior(auth()->user())->with([
+                'establishment',
+                'headedEstablishment',
+                'headedComplex',
+                'headedRegion',
+            ])->get(),
         ]);
     }
 
     public function create()
     {
-        $user = Auth::user();
-
-        $establishments = match (true) {
-            $user->isAdmin() => Establishment::all(),
-            $user->isDRRG()  => Establishment::whereHas('complex', fn($q) => $q->where('region_id', $user->headedRegion->id))->get(),
-            $user->isDRCX()  => Establishment::where('complex_id', $user->headedComplex->id)->get(),
-            $user->isDRPD()  => collect([$user->headedEstablishment]),
-            default          => collect(),
-        };
+        $this->authorize('create', User::class);
 
         return Inertia::render('Users/Create', [
-            'establishments' => $establishments,
-            'availableRoles' => $this->availableRoles($user),
+            'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
+            'availableRoles'          => auth()->user()->availableRoles(),
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'code'              => ['required', 'string', 'max:255', 'unique:users,code'],
-            'first_name'        => ['required', 'string', 'max:255'],
-            'last_name'         => ['required', 'string', 'max:255'],
-            'cin'               => ['nullable', 'string', 'max:255', 'unique:users,cin'],
-            'marital_status'    => ['nullable', 'in:single,married,divorced,widowed'],
-            'children'          => ['nullable', 'integer', 'min:0'],
-            'email'             => ['nullable', 'email', 'max:255', 'unique:users,email'],
-            'phone'             => ['nullable', 'string', 'max:255'],
-            'address'           => ['nullable', 'string', 'max:255'],
-            'date_of_birth'     => ['nullable', 'date'],
-            'date_of_recruitment' => ['nullable', 'date'],
-            'diploma'           => ['nullable', 'string', 'max:255'],
-            'rank'              => ['nullable', 'in:A1,A2,A3'],
-            'role'              => ['required', 'in:admin,DRRG,DRCX,DRPD,AGAD,FRMT'],
-            'password'          => ['required', 'string', 'min:8', 'confirmed'],
-            'password_confirmation' => ['required', 'string'],
-            'establishment_id'  => ['nullable', 'exists:establishments,id'],
-        ]);
+        $this->authorize('create', User::class);
 
-        $validated['password'] = Hash::make($validated['password']);
+        User::create($request->validate([
+            'code'                => ['required', 'string', 'max:255', 'unique:users,code'],
+            'first_name'          => ['required', 'string', 'max:255'],
+            'last_name'           => ['required', 'string', 'max:255'],
+            'cin'                 => ['nullable', 'string', 'max:255', 'unique:users,cin'],
+            'marital_status'      => ['nullable', 'in:single,married,divorced,widowed'],
+            'children'            => ['nullable', 'integer', 'min:0'],
+            'email'               => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'phone'               => ['nullable', 'string', 'max:255'],
+            'address'             => ['nullable', 'string', 'max:255'],
+            'date_of_birth'       => ['nullable', 'date', 'before:today'],
+            'date_of_recruitment' => ['nullable', 'date', 'before_or_equal:today'],
+            'diploma'             => ['nullable', 'string', 'max:255'],
+            'rank'                => ['nullable', 'in:A1,A2,A3'],
+            'role'                => ['required', Rule::in(auth()->user()->availableRoles())],
+            'password'            => ['required', 'string', 'min:8', 'confirmed'],
+            'establishment_id'    => [
+                'required_if:role,DRRG,DRCX,DRPD,AGAD,FRMT',
+                'exists:establishments,id',
+            ],
+        ]));
 
-        User::create($validated);
-
-        return redirect()->route(str_replace('.store', '.index', Route::currentRouteName()));
+        return redirect()->action([UserController::class, 'index']);
     }
 
     public function show(User $user)
     {
         $this->authorize('view', $user);
 
-        $user->load(['establishment:id,code,name', 'headedEstablishment', 'headedComplex', 'headedRegion']);
-
         return Inertia::render('Users/Show', [
-            'user' => $user,
+            'user' => $user->load([
+                'establishment',
+                'headedEstablishment',
+                'headedComplex',
+                'headedRegion',
+            ]),
         ]);
     }
 
@@ -89,22 +82,10 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        $authUser = Auth::user();
-
-        $establishments = match (true) {
-            $authUser->isAdmin() => Establishment::all(),
-            $authUser->isDRRG()  => Establishment::whereHas('complex', fn($q) => $q->where('region_id', $authUser->headedRegion->id))->get(),
-            $authUser->isDRCX()  => Establishment::where('complex_id', $authUser->headedComplex->id)->get(),
-            $authUser->isDRPD()  => collect([$authUser->headedEstablishment]),
-            default              => collect(),
-        };
-
-        $user->load(['establishment:id,code,name']);
-
         return Inertia::render('Users/Edit', [
-            'user' => $user,
-            'establishments' => $establishments,
-            'availableRoles' => $this->availableRoles($authUser),
+            'user'                    => $user->load(['establishment']),
+            'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
+            'availableRoles'          => auth()->user()->availableRoles(),
         ]);
     }
 
@@ -112,27 +93,29 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        $validated = $request->validate([
-            'code'              => ['sometimes', 'required', 'string', 'max:255', 'unique:users,code,'.$user->id],
-            'first_name'        => ['sometimes', 'required', 'string', 'max:255'],
-            'last_name'         => ['sometimes', 'required', 'string', 'max:255'],
-            'cin'               => ['nullable', 'string', 'max:255', 'unique:users,cin,'.$user->id],
-            'marital_status'    => ['nullable', 'in:single,married,divorced,widowed'],
-            'children'          => ['nullable', 'integer', 'min:0'],
-            'email'             => ['nullable', 'email', 'max:255', 'unique:users,email,'.$user->id],
-            'phone'             => ['nullable', 'string', 'max:255'],
-            'address'           => ['nullable', 'string', 'max:255'],
-            'date_of_birth'     => ['nullable', 'date'],
-            'date_of_recruitment' => ['nullable', 'date'],
-            'diploma'           => ['nullable', 'string', 'max:255'],
-            'rank'              => ['nullable', 'in:A1,A2,A3'],
-            'role'              => ['sometimes', 'required', 'in:admin,DRRG,DRCX,DRPD,AGAD,FRMT'],
-            'establishment_id'  => ['nullable', 'exists:establishments,id'],
-        ]);
+        $user->update($request->validate([
+            'code'                => ['sometimes', 'required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'first_name'          => ['sometimes', 'required', 'string', 'max:255'],
+            'last_name'           => ['sometimes', 'required', 'string', 'max:255'],
+            'cin'                 => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'marital_status'      => ['nullable', 'in:single,married,divorced,widowed'],
+            'children'            => ['nullable', 'integer', 'min:0'],
+            'email'               => ['nullable', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'phone'               => ['nullable', 'string', 'max:255'],
+            'address'             => ['nullable', 'string', 'max:255'],
+            'date_of_birth'       => ['nullable', 'date', 'before:today'],
+            'date_of_recruitment' => ['nullable', 'date', 'before_or_equal:today'],
+            'diploma'             => ['nullable', 'string', 'max:255'],
+            'rank'                => ['nullable', 'in:A1,A2,A3'],
+            'role'                => ['sometimes', 'required', Rule::in(auth()->user()->availableRoles())],
+            'establishment_id'    => [
+                'sometimes',
+                'required_if:role,DRRG,DRCX,DRPD,AGAD,FRMT',
+                'exists:establishments,id',
+            ],
+        ]));
 
-        $user->update($validated);
-
-        return redirect()->route(str_replace('.update', '.index', Route::currentRouteName()));
+        return redirect()->action([UserController::class, 'index']);
     }
 
     public function destroy(User $user)
@@ -148,26 +131,24 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        $validated = $request->validate([
-            'password'              => ['required', 'string', Password::defaults(), 'confirmed'],
-            'password_confirmation' => ['required', 'string'],
-        ]);
+        $rules = [
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+        ];
 
-        $user->update([
-            'password' => Hash::make($validated['password']),
-        ]);
+        if ($user->id === auth()->id()) {
+            $rules['current_password'] = [
+                'required',
+                'string',
+                function($fail) use ($user) {
+                    if (!Hash::check(request('current_password'), $user->password)) {
+                        $fail('The current password is incorrect.');
+                    }
+                },
+            ];
+        }
+
+        $user->update($request->validate($rules));
 
         return back();
-    }
-
-    private function availableRoles(User $authUser): array
-    {
-        return match (true) {
-            $authUser->isAdmin() => ['admin', 'DRRG', 'DRCX', 'DRPD', 'AGAD', 'FRMT'],
-            $authUser->isDRRG()  => ['DRCX', 'DRPD', 'AGAD', 'FRMT'],
-            $authUser->isDRCX()  => ['DRPD', 'AGAD', 'FRMT'],
-            $authUser->isDRPD()  => ['AGAD', 'FRMT'],
-            default              => [],
-        };
     }
 }
