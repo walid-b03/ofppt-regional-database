@@ -32,11 +32,11 @@ class Region extends Model
     public function scopeForHead($query, User $user)
     {
         if ($user->isAdmin()) {
-            return $query;
+            return $query->with(['head', 'complexes']);
         }
 
         if ($user->isDRRG()) {
-            return $query->where('id', $user->headedRegion->id);
+            return $query->with(['head', 'complexes'])->where('id', $user->headedRegion->id);
         }
 
         return $query->where('id', 0);

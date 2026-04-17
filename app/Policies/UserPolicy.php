@@ -6,47 +6,45 @@ use App\Models\User;
 
 class UserPolicy
 {
-    public function before(User $user, string $ability, ?User $model = null): ?bool
+    public function before(User $authUser): ?bool
     {
-        if ($ability === 'delete' && $model && $user->id === $model->id) return false;
-
-        return $user->isAdmin() ?: null;
+        return $authUser->isAdmin() ?: null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(User $authUser): bool
     {
-        return $user->isDRPD() || $user->isDRCX() || $user->isDRRG();
+        return $authUser->isDRPD() || $authUser->isDRCX() || $authUser->isDRRG();
     }
 
-    public function view(User $user, User $model): bool
+    public function view(User $authUser, User $user): bool
     {
-        return $user->headedEstablishment?->id === $model->establishment_id
-            || $user->headedComplex?->id === $model->establishment?->complex_id
-            || $user->headedRegion?->id === $model->establishment?->complex?->region_id;
+        return $authUser->headedEstablishment?->id === $user->establishment_id
+            || $authUser->headedComplex?->id === $user->establishment?->complex_id
+            || $authUser->headedRegion?->id === $user->establishment?->complex?->region_id;
     }
 
-    public function create(User $user): bool
+    public function create(User $authUser): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($authUser);
     }
 
-    public function update(User $user, User $model): bool
+    public function update(User $authUser, User $user): bool
     {
-        return $this->view($user, $model);
+        return $this->view($authUser, $user);
     }
 
-    public function delete(User $user, User $model): bool
+    public function delete(User $authUser, User $user): bool
     {
-        return $this->view($user, $model);
+        return $this->view($authUser, $user);
     }
 
-    public function restore(User $user): bool
+    public function restore(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 }

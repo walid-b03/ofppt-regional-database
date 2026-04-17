@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\LoadAuthUserRelations;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             HandleInertiaRequests::class,
+            LoadAuthUserRelations::class,
+        ]);
+
+        $middleware->api(prepend: [
+            LoadAuthUserRelations::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

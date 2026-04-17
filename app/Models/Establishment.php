@@ -56,21 +56,21 @@ class Establishment extends Model
     public function scopeForHead($query, User $user)
     {
         if ($user->isAdmin()) {
-            return $query;
+            return $query->with(['complex', 'head', 'users', 'rooms', 'assets', 'trainings']);
         }
 
         if ($user->isDRRG()) {
-            return $query->whereHas('complex', function($q) use($user) {
+            return $query->with(['complex', 'head', 'users', 'rooms', 'assets', 'trainings'])->whereHas('complex', function($q) use($user) {
                 $q->where('region_id', $user->headedRegion->id);
             });
         }
 
         if ($user->isDRCX()) {
-            return $query->where('complex_id', $user->headedComplex->id);
+            return $query->with(['complex', 'head', 'users', 'rooms', 'assets', 'trainings'])->where('complex_id', $user->headedComplex->id);
         }
 
         if ($user->isDRPD()) {
-            return $query->where('id', $user->headedEstablishment->id);
+            return $query->with(['complex', 'head', 'users', 'rooms', 'assets', 'trainings'])->where('id', $user->headedEstablishment->id);
         }
 
         return $query->where('id', 0);

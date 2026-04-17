@@ -14,8 +14,10 @@ class ComplexController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Complex::class);
+
         return Inertia::render('Complexes/Index', [
-            'complexes' => Complex::forHead(auth()->user())->with(['region', 'head'])->get(),
+            'complexes' => Complex::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -24,8 +26,8 @@ class ComplexController extends Controller
         $this->authorize('create', Complex::class);
 
         return Inertia::render('Complexes/Create', [
-            'availableRegions' => Region::forHead(auth()->user())->get(),
             'availableHeads'   => User::where('role', 'DRCX')->whereDoesntHave('headedComplex')->get(),
+            'availableRegions' => Region::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -40,7 +42,7 @@ class ComplexController extends Controller
             'phone'     => ['nullable', 'string', 'max:255'],
             'city'      => ['nullable', 'string', 'max:255'],
             'region_id' => ['required', 'exists:regions,id'],
-            'head_id'   => ['nullable', Rule::exists('users')->where('role', 'DRCX')],
+            'head_id'   => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
         ]));
 
         return redirect()->action([ComplexController::class, 'index']);
@@ -51,7 +53,7 @@ class ComplexController extends Controller
         $this->authorize('view', $complex);
 
         return Inertia::render('Complexes/Show', [
-            'complex' => $complex->load(['region', 'head', 'establishments']),
+            'complex' => $complex,
         ]);
     }
 
@@ -66,9 +68,9 @@ class ComplexController extends Controller
         )->get();
 
         return Inertia::render('Complexes/Edit', [
-            'complex'          => $complex->load(['region', 'head']),
-            'availableRegions' => Region::forHead(auth()->user())->get(),
+            'complex'          => $complex,
             'availableHeads'   => $availableHeads,
+            'availableRegions' => Region::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -83,7 +85,7 @@ class ComplexController extends Controller
             'phone'     => ['nullable', 'string', 'max:255'],
             'city'      => ['nullable', 'string', 'max:255'],
             'region_id' => ['sometimes', 'required', 'exists:regions,id'],
-            'head_id'   => ['nullable', Rule::exists('users')->where('role', 'DRCX')],
+            'head_id'   => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
         ]));
 
         return redirect()->action([ComplexController::class, 'index']);

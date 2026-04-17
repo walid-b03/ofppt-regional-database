@@ -14,7 +14,7 @@ class Complex extends Model
         'name',
         'email',
         'phone',
-        'location',
+        'city',
         'head_id',
         'region_id',
     ];
@@ -39,15 +39,15 @@ class Complex extends Model
     public function scopeForHead($query, User $user)
     {
         if ($user->isAdmin()) {
-            return $query;
+            return $query->with(['region', 'head', 'establishments']);
         }
 
         if ($user->isDRRG()) {
-            return $query->where('region_id', $user->headedRegion->id);
+            return $query->with(['region', 'head', 'establishments'])->where('region_id', $user->headedRegion->id);
         }
 
         if ($user->isDRCX()) {
-            return $query->where('id', $user->headedComplex->id);
+            return $query->with(['region', 'head', 'establishments'])->where('id', $user->headedComplex->id);
         }
 
         return $query->where('id', 0);

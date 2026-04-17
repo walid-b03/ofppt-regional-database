@@ -13,8 +13,10 @@ class RegionController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Region::class);
+
         return Inertia::render('Regions/Index', [
-            'regions' => Region::forHead(auth()->user())->with(['head'])->get(),
+            'regions' => Region::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -36,7 +38,7 @@ class RegionController extends Controller
             'name'    => ['required', 'string', 'max:255'],
             'email'   => ['nullable', 'email', 'max:255'],
             'phone'   => ['nullable', 'string', 'max:255'],
-            'head_id' => ['nullable', Rule::exists('users')->where('role', 'DRRG')],
+            'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRRG')],
         ]));
 
         return redirect()->action([RegionController::class, 'index']);
@@ -47,7 +49,7 @@ class RegionController extends Controller
         $this->authorize('view', $region);
 
         return Inertia::render('Regions/Show', [
-            'region' => $region->load(['head', 'complexes']),
+            'region' => $region,
         ]);
     }
 
@@ -62,7 +64,7 @@ class RegionController extends Controller
         )->get();
 
         return Inertia::render('Regions/Edit', [
-            'region'         => $region->load(['head']),
+            'region'         => $region,
             'availableHeads' => $availableHeads,
         ]);
     }
@@ -76,7 +78,7 @@ class RegionController extends Controller
             'name'    => ['sometimes', 'required', 'string', 'max:255'],
             'email'   => ['nullable', 'email', 'max:255'],
             'phone'   => ['nullable', 'string', 'max:255'],
-            'head_id' => ['nullable', Rule::exists('users')->where('role', 'DRRG')],
+            'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRRG')],
         ]));
 
         return redirect()->action([RegionController::class, 'index']);

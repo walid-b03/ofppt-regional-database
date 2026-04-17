@@ -13,8 +13,10 @@ class AssetController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Asset::class);
+
         return Inertia::render('Assets/Index', [
-            'assets' => Asset::forUser(auth()->user())->with(['establishment'])->get(),
+            'assets' => Asset::forUser(auth()->user())->get(),
         ]);
     }
 
@@ -49,7 +51,7 @@ class AssetController extends Controller
         $this->authorize('view', $asset);
 
         return Inertia::render('Assets/Show', [
-            'asset' => $asset->load(['establishment']),
+            'asset' => $asset,
         ]);
     }
 
@@ -58,7 +60,7 @@ class AssetController extends Controller
         $this->authorize('update', $asset);
 
         return Inertia::render('Assets/Edit', [
-            'asset' => $asset->load(['establishment']),
+            'asset' => $asset,
             'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }

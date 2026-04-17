@@ -133,23 +133,23 @@ class User extends Authenticatable
     public function scopeForSuperior($query, User $user)
     {
         if ($user->isAdmin()) {
-            return $query;
+            return $query->with('establishment.complex.region');
         }
 
         if ($user->isDRRG()) {
-            return $query->whereHas('establishment.complex', function($q) use($user) {
+            return $query->with('establishment.complex.region')->whereHas('establishment.complex', function($q) use($user) {
                 $q->where('region_id', $user->headedRegion->id);
             });
         }
 
         if ($user->isDRCX()) {
-            return $query->whereHas('establishment', function($q) use($user) {
+            return $query->with('establishment.complex.region')->whereHas('establishment', function($q) use($user) {
                 $q->where('complex_id', $user->headedComplex->id);
             });
         }
 
         if ($user->isDRPD()) {
-            return $query->where('establishment_id', $user->headedEstablishment->id);
+            return $query->with('establishment.complex.region')->where('establishment_id', $user->headedEstablishment->id);
         }
 
         return $query->where('id', $user->id);

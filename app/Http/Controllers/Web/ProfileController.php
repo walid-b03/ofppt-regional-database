@@ -14,14 +14,14 @@ class ProfileController extends Controller
     public function show()
     {
         return Inertia::render('Profile/Show', [
-            'user' => auth()->user()->load(['establishment.complex.region']),
+            'user' => auth()->user(),
         ]);
     }
 
     public function edit()
     {
         return Inertia::render('Profile/Edit', [
-            'user' => auth()->user()->load(['establishment.complex.region']),
+            'user' => auth()->user(),
         ]);
     }
 

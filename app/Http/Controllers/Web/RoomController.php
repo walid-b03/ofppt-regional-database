@@ -13,8 +13,10 @@ class RoomController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Room::class);
+
         return Inertia::render('Rooms/Index', [
-            'rooms' => Room::forUser(auth()->user())->with(['establishment'])->get(),
+            'rooms' => Room::forUser(auth()->user())->get(),
         ]);
     }
 
@@ -46,7 +48,7 @@ class RoomController extends Controller
         $this->authorize('view', $room);
 
         return Inertia::render('Rooms/Show', [
-            'room' => $room->load(['establishment']),
+            'room' => $room,
         ]);
     }
 
@@ -55,7 +57,7 @@ class RoomController extends Controller
         $this->authorize('update', $room);
 
         return Inertia::render('Rooms/Edit', [
-            'room' => $room->load(['establishment']),
+            'room' => $room,
             'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }

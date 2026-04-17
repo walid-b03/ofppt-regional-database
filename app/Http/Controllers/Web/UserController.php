@@ -15,13 +15,10 @@ class UserController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', User::class);
+
         return Inertia::render('Users/Index', [
-            'users' => User::forSuperior(auth()->user())->with([
-                'establishment',
-                'headedEstablishment',
-                'headedComplex',
-                'headedRegion',
-            ])->get(),
+            'users' => User::forSuperior(auth()->user())->get(),
         ]);
     }
 
@@ -30,8 +27,8 @@ class UserController extends Controller
         $this->authorize('create', User::class);
 
         return Inertia::render('Users/Create', [
-            'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
-            'availableRoles'          => auth()->user()->availableRoles(),
+            'availableRoles'            => auth()->user()->availableRoles(),
+            'availableEstablishments'   => Establishment::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -69,12 +66,7 @@ class UserController extends Controller
         $this->authorize('view', $user);
 
         return Inertia::render('Users/Show', [
-            'user' => $user->load([
-                'establishment',
-                'headedEstablishment',
-                'headedComplex',
-                'headedRegion',
-            ]),
+            'user' => $user,
         ]);
     }
 
@@ -83,9 +75,9 @@ class UserController extends Controller
         $this->authorize('update', $user);
 
         return Inertia::render('Users/Edit', [
-            'user'                    => $user->load(['establishment']),
-            'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
+            'user'                    => $user,
             'availableRoles'          => auth()->user()->availableRoles(),
+            'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }
 

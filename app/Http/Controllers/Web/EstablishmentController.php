@@ -14,8 +14,10 @@ class EstablishmentController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Establishment::class);
+
         return Inertia::render('Establishments/Index', [
-            'establishments' => Establishment::forHead(auth()->user())->with(['complex', 'head'])->get(),
+            'establishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -24,8 +26,8 @@ class EstablishmentController extends Controller
         $this->authorize('create', Establishment::class);
 
         return Inertia::render('Establishments/Create', [
-            'availableComplexes' => Complex::forHead(auth()->user())->get(),
             'availableHeads'     => User::where('role', 'DRPD')->whereDoesntHave('headedEstablishment')->get(),
+            'availableComplexes' => Complex::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -42,7 +44,7 @@ class EstablishmentController extends Controller
             'phone'         => ['nullable', 'string', 'max:255'],
             'address'       => ['nullable', 'string', 'max:255'],
             'complex_id'    => ['required', 'exists:complexes,id'],
-            'head_id'       => ['nullable', Rule::exists('users')->where('role', 'DRPD')],
+            'head_id'       => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
         ]));
 
         return redirect()->action([EstablishmentController::class, 'index']);
@@ -53,7 +55,7 @@ class EstablishmentController extends Controller
         $this->authorize('view', $establishment);
 
         return Inertia::render('Establishments/Show', [
-            'establishment' => $establishment->load(['complex', 'head', 'users', 'rooms', 'assets', 'trainings']),
+            'establishment' => $establishment,
         ]);
     }
 
@@ -68,9 +70,9 @@ class EstablishmentController extends Controller
         )->get();
 
         return Inertia::render('Establishments/Edit', [
-            'establishment'    => $establishment->load(['complex', 'head']),
-            'availableComplexes' => Complex::forHead(auth()->user())->get(),
+            'establishment'    => $establishment,
             'availableHeads'   => $availableHeads,
+            'availableComplexes' => Complex::forHead(auth()->user())->get(),
         ]);
     }
 
@@ -87,7 +89,7 @@ class EstablishmentController extends Controller
             'phone'        => ['nullable', 'string', 'max:255'],
             'address'      => ['nullable', 'string', 'max:255'],
             'complex_id'   => ['sometimes', 'required', 'exists:complexes,id'],
-            'head_id'      => ['nullable', Rule::exists('users')->where('role', 'DRPD')],
+            'head_id'      => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
         ]));
 
         return redirect()->action([EstablishmentController::class, 'index']);

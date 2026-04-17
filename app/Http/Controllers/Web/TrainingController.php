@@ -13,8 +13,10 @@ class TrainingController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Training::class);
+
         return Inertia::render('Trainings/Index', [
-            'trainings' => Training::forUser(auth()->user())->with(['establishment'])->get(),
+            'trainings' => Training::forUser(auth()->user())->get(),
         ]);
     }
 
@@ -50,7 +52,7 @@ class TrainingController extends Controller
         $this->authorize('view', $training);
 
         return Inertia::render('Trainings/Show', [
-            'training' => $training->load(['establishment']),
+            'training' => $training,
         ]);
     }
 
@@ -59,7 +61,7 @@ class TrainingController extends Controller
         $this->authorize('update', $training);
 
         return Inertia::render('Trainings/Edit', [
-            'training' => $training->load(['establishment']),
+            'training' => $training,
             'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }
