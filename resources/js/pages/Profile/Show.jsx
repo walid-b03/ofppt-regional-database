@@ -1,8 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import Dashboard from '../layout/Dashboard';
-import UserInfoCard, { formatDate } from '../components/UserInfoCard';
-import { MARITAL_OPTIONS, RANK_OPTIONS } from '../lib/constants';
-import { Globe, Pencil } from 'lucide-react';
+import Dashboard from '../../layout/Dashboard';
+import UserInfoCard, { formatDate } from '../../components/UserInfoCard';
+import { MARITAL_OPTIONS, RANK_OPTIONS } from '../../lib/constants';
+import { Pencil } from 'lucide-react';
 
 export default function Profile({ user: serverUser }) {
     const user = serverUser ?? {};
@@ -90,46 +90,6 @@ export default function Profile({ user: serverUser }) {
                         ]}
                     />
                 </div>
-
-                {/* ── Establishment Chain ── */}
-                {user.establishment && (
-                    <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
-                        <div className="flex items-center gap-3 border-b border-stone-100 px-5 py-4">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                                <Globe className="h-4 w-4" />
-                            </div>
-                            <h3 className="text-sm font-semibold text-stone-900">Affectation hiérarchique</h3>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2 px-5 py-5 text-xs font-medium">
-                            {user.establishment.complex?.region && (
-                                <>
-                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-4 py-2 text-indigo-700 ring-1 ring-inset ring-indigo-100">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                                        {user.establishment.complex.region.name}
-                                    </span>
-                                    <svg className="h-4 w-4 text-stone-300" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                </>
-                            )}
-                            {user.establishment.complex && (
-                                <>
-                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-4 py-2 text-violet-700 ring-1 ring-inset ring-violet-100">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-                                        {user.establishment.complex.name}
-                                    </span>
-                                    <svg className="h-4 w-4 text-stone-300" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                </>
-                            )}
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-4 py-2 text-amber-700 ring-1 ring-inset ring-amber-100">
-                                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                                {user.establishment.name}
-                            </span>
-                        </div>
-                    </div>
-                )}
             </div>
         </Dashboard>
     );

@@ -1,91 +1,92 @@
 import { Head, Link } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import UserInfoCard from '../../components/UserInfoCard';
-import { Users } from 'lucide-react';
-import { getRoutePrefix } from '../../lib/routes';
+import { Pencil, Building2 } from 'lucide-react';
 
 export default function Show({ establishment }) {
-    const prefix = getRoutePrefix('establishments', { drrg: 'establishments', drcx: 'establishments', drpd: 'establishment' });
+    const data = establishment ?? {};
 
     return (
-        <Dashboard title={`Établissement — ${establishment.name}`}>
-            <Head title={`${establishment.name} — OFPPT`} />
+        <Dashboard title={`${data.name} — Détails`}>
+            <Head title={`${data.name} — OFPPT`} />
 
             <div className="mx-auto max-w-5xl space-y-6">
-                <Link href={`/${prefix}`} className="inline-flex items-center gap-2 text-sm font-medium text-stone-500 transition-colors hover:text-indigo-600">
-                    <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L4.414 10H19a1 1 0 110 2H4.414l3.293 3.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                    </svg>
-                    Retour
-                </Link>
 
-                {/* Hero */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-600 via-amber-500 to-orange-500 shadow-lg">
+                {/* ── Hero Card ── */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-600 shadow-lg">
                     <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+                    <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-indigo-400/20 blur-3xl" />
+                    <div className="pointer-events-none absolute top-1/2 left-1/3 h-40 w-40 -translate-y-1/2 rounded-full bg-white/5 blur-2xl" />
+
                     <div className="relative px-6 py-10 sm:px-10 sm:py-14">
-                        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-2xl font-bold text-white ring-1 ring-white/20 backdrop-blur-sm">
-                                {establishment.name.charAt(0).toUpperCase()}
+                        <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+                            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-3xl font-bold text-white ring-1 ring-white/20 backdrop-blur-sm">
+                                {data.name?.slice(0, 2).toUpperCase() || '?'}
                             </div>
-                            <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-white">{establishment.name}</h2>
-                                <p className="text-sm text-amber-100">{establishment.code}</p>
+
+                            <div className="flex-1 space-y-2">
+                                <h2 className="text-2xl font-bold tracking-tight text-white">
+                                    {data.name || 'Établissement'}
+                                </h2>
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-medium text-orange-100 backdrop-blur-sm">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                        {data.code}
+                                    </span>
+                                    {data.sector && (
+                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-medium text-orange-100 backdrop-blur-sm">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                            {data.sector}
+                                        </span>
+                                    )}
+                                    {data.type && (
+                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-medium text-orange-100 backdrop-blur-sm">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                            {data.type}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
+
+                            <Link
+                                href={`/establishments/${data.id}/edit`}
+                                className="group/btn inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-sm font-medium text-white ring-1 ring-white/20 backdrop-blur-sm transition-all duration-200 hover:bg-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                            >
+                                <Pencil className="h-4 w-4 transition-transform group-hover/btn:scale-110" />
+                                Modifier
+                            </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* Info */}
+                {/* ── Info Cards ── */}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <UserInfoCard
-                        title="Informations"
-                        icon="user"
+                        title="Contact"
+                        icon="mail"
                         items={[
-                            ['Code', establishment.code],
-                            ['Nom', establishment.name],
-                            ['Complexe', establishment.complex?.name],
-                            ['Secteur', establishment.sector],
-                            ['Type', establishment.type],
-                            ['Responsable', establishment.head ? `${establishment.head.first_name} ${establishment.head.last_name}` : null],
+                            ['Email', data.email],
+                            ['Téléphone', data.phone],
+                            ['Adresse', data.address],
                         ]}
                     />
                     <UserInfoCard
-                        title="Coordonnées"
-                        icon="mail"
+                        title="Responsable"
+                        icon="user"
+                        items={data.head ? [
+                            ['Nom', `${data.head.first_name} ${data.head.last_name}`],
+                            ['Code', data.head.code],
+                        ] : []}
+                    />
+                    <UserInfoCard
+                        title="Informations"
+                        icon="briefcase"
                         items={[
-                            ['Email', establishment.email],
-                            ['Téléphone', establishment.phone],
-                            ['Adresse', establishment.address],
+                            ['Secteur', data.sector],
+                            ['Type', data.type],
                         ]}
                     />
                 </div>
-
-                {/* Users */}
-                {establishment.users && establishment.users.length > 0 && (
-                    <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
-                        <div className="flex items-center gap-3 border-b border-stone-100 px-5 py-4">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                                <Users className="h-4 w-4" />
-                            </div>
-                            <h3 className="text-sm font-semibold text-stone-900">
-                                Utilisateurs ({establishment.users.length})
-                            </h3>
-                        </div>
-                        <div className="divide-y divide-stone-50">
-                            {establishment.users.map(u => (
-                                <div key={u.id} className="flex items-center justify-between px-5 py-3">
-                                    <div>
-                                        <p className="text-sm font-medium text-stone-800">{u.first_name} {u.last_name}</p>
-                                        <p className="text-xs text-stone-400">{u.code} — {u.role_label}</p>
-                                    </div>
-                                    <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-500">
-                                        {u.code}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </div>
         </Dashboard>
     );

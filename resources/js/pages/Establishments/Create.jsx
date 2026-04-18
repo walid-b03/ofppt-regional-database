@@ -1,11 +1,9 @@
 import { Head, useForm } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
-import FormCard from '../../components/FormCard';
+import EntityFormCard from '../../components/EntityFormCard';
 import { SECTOR_OPTIONS, ESTABLISHMENT_TYPE_OPTIONS } from '../../lib/constants';
-import { getRoutePrefix } from '../../lib/routes';
 
-export default function Create({ complexes, availableHeads }) {
-    const prefix = getRoutePrefix('establishments', { drrg: 'establishments', drcx: 'establishments', drpd: 'establishment' });
+export default function Create({ availableComplexes, availableHeads }) {
     const { data, setData, post, processing, errors } = useForm({
         code: '',
         name: '',
@@ -20,19 +18,20 @@ export default function Create({ complexes, availableHeads }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(`/${prefix}`);
+        post('/establishments');
     }
 
     return (
         <Dashboard title="Ajouter un établissement">
             <Head title="Ajouter un établissement — OFPPT" />
 
-            <FormCard
+            <EntityFormCard
                 title="Nouvel établissement"
-                subtitle="Remplissez les informations de l'établissement"
-                cancelHref={`/${prefix}`}
+                cancelHref="/establishments"
                 onSubmit={handleSubmit}
                 processing={processing}
+                isCreate={true}
+                showDelete={false}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },
@@ -42,7 +41,7 @@ export default function Create({ complexes, availableHeads }) {
                         value: data.complex_id,
                         error: errors.complex_id,
                         onChange: setData,
-                        options: complexes.map(c => ({ value: c.id, label: c.name })),
+                        options: availableComplexes.map(c => ({ value: c.id, label: c.name })),
                     },
                     {
                         name: 'head_id',

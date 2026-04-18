@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { usePage } from '@inertiajs/react';
+import { usePage, Link } from '@inertiajs/react';
 import Sidebar from '../components/Sidebar';
-import { Menu } from 'lucide-react';
+import { Menu, ChevronRight } from 'lucide-react';
 
 export default function Dashboard({ children, title }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function Dashboard({ children, title }) {
             {/* Main content */}
             <div className="lg:pl-72">
                 {/* Top bar */}
-                <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-stone-200 bg-white/80 px-4 shadow-sm backdrop-blur-lg sm:gap-x-6 sm:px-6 lg:px-8">
+                <header className="sticky top-0 z-30 flex h-20 shrink-0 items-center gap-x-4 border-b border-stone-200 bg-white/80 px-4 shadow-sm backdrop-blur-lg sm:gap-x-6 sm:px-6 lg:px-8">
                     {/* Mobile menu button */}
                     <button
                         type="button"
@@ -36,16 +36,20 @@ export default function Dashboard({ children, title }) {
                         {title}
                     </h1>
 
-                    {/* User mini info */}
-                    <div className="flex items-center gap-x-2.5">
+                    {/* User banner */}
+                    <Link
+                        href="/profile"
+                        className="group flex items-center gap-x-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-stone-100"
+                    >
                         <div className="hidden sm:flex sm:flex-col sm:items-end">
-                            <p className="text-sm font-medium text-stone-700">{name || 'Utilisateur'}</p>
+                            <p className="text-sm font-medium text-stone-700 group-hover:text-stone-900">{name || 'Utilisateur'}</p>
                             <p className="text-[11px] text-stone-400">{user.role_label ?? user.role ?? ''} — {user.code}</p>
                         </div>
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-xs font-bold text-white shadow-sm">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-bold text-white shadow-sm transition-transform group-hover:scale-105">
                             {name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
                         </div>
-                    </div>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-stone-400 transition-colors group-hover:text-stone-600" />
+                    </Link>
                 </header>
 
                 {/* Page content */}

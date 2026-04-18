@@ -1,88 +1,105 @@
 import { Head, Link } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import UserInfoCard from '../../components/UserInfoCard';
-import { Building2 } from 'lucide-react';
-import { getRoutePrefix } from '../../lib/routes';
+import { Pencil, Building2 } from 'lucide-react';
 
 export default function Show({ complex }) {
-    const prefix = getRoutePrefix('complexes', { drrg: 'complexes', drcx: 'complex' });
+    const data = complex ?? {};
 
     return (
-        <Dashboard title={`Complexe — ${complex.name}`}>
-            <Head title={`${complex.name} — OFPPT`} />
+        <Dashboard title={`${data.name} — Détails`}>
+            <Head title={`${data.name} — OFPPT`} />
 
             <div className="mx-auto max-w-5xl space-y-6">
-                <Link
-                    href={`/${prefix}`}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-stone-500 transition-colors hover:text-indigo-600"
-                >
-                    <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L4.414 10H19a1 1 0 110 2H4.414l3.293 3.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                    </svg>
-                    Retour
-                </Link>
 
-                {/* Hero */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-700 via-violet-600 to-indigo-600 shadow-lg">
+                {/* ── Hero Card ── */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-600 shadow-lg">
                     <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+                    <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-indigo-400/20 blur-3xl" />
+                    <div className="pointer-events-none absolute top-1/2 left-1/3 h-40 w-40 -translate-y-1/2 rounded-full bg-white/5 blur-2xl" />
+
                     <div className="relative px-6 py-10 sm:px-10 sm:py-14">
-                        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-2xl font-bold text-white ring-1 ring-white/20 backdrop-blur-sm">
-                                {complex.name.charAt(0).toUpperCase()}
+                        <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+                            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-3xl font-bold text-white ring-1 ring-white/20 backdrop-blur-sm">
+                                {data.name?.slice(0, 2).toUpperCase() || '?'}
                             </div>
-                            <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-white">{complex.name}</h2>
-                                <p className="text-sm text-violet-200">{complex.code}</p>
+
+                            <div className="flex-1 space-y-2">
+                                <h2 className="text-2xl font-bold tracking-tight text-white">
+                                    {data.name || 'Complexe'}
+                                </h2>
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-medium text-violet-100 backdrop-blur-sm">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                        {data.code}
+                                    </span>
+                                    {data.city && (
+                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-medium text-violet-100 backdrop-blur-sm">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                            {data.city}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
+
+                            <Link
+                                href={`/complexes/${data.id}/edit`}
+                                className="group/btn inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-sm font-medium text-white ring-1 ring-white/20 backdrop-blur-sm transition-all duration-200 hover:bg-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                            >
+                                <Pencil className="h-4 w-4 transition-transform group-hover/btn:scale-110" />
+                                Modifier
+                            </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* Info cards */}
+                {/* ── Info Cards ── */}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <UserInfoCard
-                        title="Informations"
-                        icon="user"
+                        title="Contact"
+                        icon="mail"
                         items={[
-                            ['Code', complex.code],
-                            ['Nom', complex.name],
-                            ['Région', complex.region?.name],
-                            ['Responsable', complex.head ? `${complex.head.first_name} ${complex.head.last_name}` : null],
+                            ['Email', data.email],
+                            ['Téléphone', data.phone],
                         ]}
                     />
                     <UserInfoCard
-                        title="Coordonnées"
-                        icon="mail"
+                        title="Responsable"
+                        icon="user"
+                        items={data.head ? [
+                            ['Nom', `${data.head.first_name} ${data.head.last_name}`],
+                            ['Code', data.head.code],
+                        ] : []}
+                    />
+                    <UserInfoCard
+                        title="Localisation"
+                        icon="mapPin"
                         items={[
-                            ['Email', complex.email],
-                            ['Téléphone', complex.phone],
-                            ['Ville', complex.location],
+                            ['Ville', data.city],
+                            ['Région', data.region?.name],
                         ]}
                     />
                 </div>
 
-                {/* Establishments */}
-                {complex.establishments && complex.establishments.length > 0 && (
+                {/* ── Establishments ── */}
+                {data.establishments?.length > 0 && (
                     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
                         <div className="flex items-center gap-3 border-b border-stone-100 px-5 py-4">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
                                 <Building2 className="h-4 w-4" />
                             </div>
-                            <h3 className="text-sm font-semibold text-stone-900">
-                                Établissements ({complex.establishments.length})
-                            </h3>
+                            <h3 className="text-sm font-semibold text-stone-900">Établissements ({data.establishments.length})</h3>
                         </div>
-                        <div className="divide-y divide-stone-50">
-                            {complex.establishments.map(e => (
-                                <div key={e.id} className="flex items-center justify-between px-5 py-3">
-                                    <div>
-                                        <p className="text-sm font-medium text-stone-800">{e.name}</p>
-                                        <p className="text-xs text-stone-400">{e.code}</p>
-                                    </div>
-                                    <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-500">
-                                        {e.code}
-                                    </span>
-                                </div>
+                        <div className="flex flex-wrap gap-2 px-5 py-5">
+                            {data.establishments.map(establishment => (
+                                <Link
+                                    key={establishment.id}
+                                    href={`/establishments/${establishment.id}`}
+                                    className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-4 py-2 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-100 hover:bg-amber-100"
+                                >
+                                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                    {establishment.name}
+                                </Link>
                             ))}
                         </div>
                     </div>

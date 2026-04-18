@@ -1,10 +1,9 @@
 import { Head } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import DataTable from '../../components/DataTable';
-import { getRoutePrefix } from '../../lib/routes';
 
-export default function Index({ rooms }) {
-    const prefix = getRoutePrefix('rooms');
+export default function Index({ rooms, auth }) {
+    const canFilter = auth?.user?.role === 'admin' || auth?.user?.role === 'DRRG' || auth?.user?.role === 'DRCX';
     const uniqueEstablishments = [...new Map(rooms.map(r => [r.establishment?.id, r.establishment])).values()].filter(Boolean);
 
     return (
@@ -27,19 +26,23 @@ export default function Index({ rooms }) {
                         render: r => r.establishment?.name || <span className="text-stone-400">—</span>,
                     },
                 ]}
-                createHref={`/${prefix}/create`}
-                showPrefix={prefix}
-                editPrefix={prefix}
-                destroyPrefix={prefix}
-                searchPlaceholder="Rechercher une salle..."
-                filters={[
-                    {
-                        key: 'establishment',
-                        label: 'Établissement',
-                        getter: r => r.establishment?.name,
-                        options: uniqueEstablishments.map(e => ({ value: e.name, label: e.name })),
-                    },
-                ]}
+                createHref="/rooms/create"
+                showPrefix="rooms"
+                editPrefix="rooms"
+                searchPlaceholder="Rechercher par code ou nom..."
+                searchKeys={['code', 'name']}
+                filters={
+                    canFilter
+                        ? [
+                              {
+                                  key: 'establishment',
+                                  label: 'Établissement',
+                                  getter: r => r.establishment?.name,
+                                  options: uniqueEstablishments.map(e => ({ value: e.name, label: e.name })),
+                              },
+                          ]
+                        : []
+                }
                 emptyMessage="Aucune salle trouvée"
             />
         </Dashboard>

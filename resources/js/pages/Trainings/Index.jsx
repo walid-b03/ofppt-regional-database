@@ -1,13 +1,12 @@
 import { Head } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import DataTable from '../../components/DataTable';
-import { getRoutePrefix } from '../../lib/routes';
 
 const TYPE_LABELS = { Diplomante: 'Diplomante', Qualifiante: 'Qualifiante' };
 const LEVEL_LABELS = { Qualification: 'Qualification', 'Spécialisation': 'Spécialisation', Technicien: 'Technicien', 'Technicien Spécialisé': 'Technicien Spécialisé' };
 
-export default function Index({ trainings }) {
-    const prefix = getRoutePrefix('trainings');
+export default function Index({ trainings, auth }) {
+    const canFilter = auth?.user?.role === 'admin' || auth?.user?.role === 'DRRG' || auth?.user?.role === 'DRCX';
     const uniqueEstablishments = [...new Map(trainings.map(t => [t.establishment?.id, t.establishment])).values()].filter(Boolean);
 
     return (
@@ -35,19 +34,23 @@ export default function Index({ trainings }) {
                         render: t => t.establishment?.name || <span className="text-stone-400">—</span>,
                     },
                 ]}
-                createHref={`/${prefix}/create`}
-                showPrefix={prefix}
-                editPrefix={prefix}
-                destroyPrefix={prefix}
-                searchPlaceholder="Rechercher une formation..."
-                filters={[
-                    {
-                        key: 'establishment',
-                        label: 'Établissement',
-                        getter: t => t.establishment?.name,
-                        options: uniqueEstablishments.map(e => ({ value: e.name, label: e.name })),
-                    },
-                ]}
+                createHref="/trainings/create"
+                showPrefix="trainings"
+                editPrefix="trainings"
+                searchPlaceholder="Rechercher par code ou nom..."
+                searchKeys={['code', 'name']}
+                filters={
+                    canFilter
+                        ? [
+                              {
+                                  key: 'establishment',
+                                  label: 'Établissement',
+                                  getter: t => t.establishment?.name,
+                                  options: uniqueEstablishments.map(e => ({ value: e.name, label: e.name })),
+                              },
+                          ]
+                        : []
+                }
                 emptyMessage="Aucune formation trouvée"
             />
         </Dashboard>

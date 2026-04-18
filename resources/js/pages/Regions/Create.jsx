@@ -1,11 +1,9 @@
 import { Head, useForm } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
-import FormCard from '../../components/FormCard';
+import EntityFormCard from '../../components/EntityFormCard';
 import { REGION_OPTIONS } from '../../lib/constants';
-import { getRoutePrefix } from '../../lib/routes';
 
 export default function Create({ availableHeads }) {
-    const prefix = getRoutePrefix('regions', { drrg: 'region' });
     const { data, setData, post, processing, errors } = useForm({
         code: '',
         name: '',
@@ -16,19 +14,20 @@ export default function Create({ availableHeads }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(`/${prefix}`);
+        post('/regions');
     }
 
     return (
         <Dashboard title="Ajouter une région">
             <Head title="Ajouter une région — OFPPT" />
 
-            <FormCard
+            <EntityFormCard
                 title="Nouvelle région"
-                subtitle="Remplissez les informations de la région"
-                cancelHref={`/${prefix}`}
+                cancelHref="/regions"
                 onSubmit={handleSubmit}
                 processing={processing}
+                isCreate={true}
+                showDelete={false}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData, options: REGION_OPTIONS },

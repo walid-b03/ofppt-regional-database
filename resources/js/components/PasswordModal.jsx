@@ -1,20 +1,8 @@
 import { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import Modal from './Modal';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 
-/**
- * Password change modal — two modes:
- *
- * 1. **Self** (default): requires current password → `PUT /profile/password`
- * 2. **Reset** (superior resetting another user): no current password → `PUT /users/{user}/password-reset`
- *
- * @param {Object}   props
- * @param {boolean}  props.open
- * @param {Function} props.onClose
- * @param {Object}   [props.user]       — target user (omit for self)
- * @param {string}   [props.actionUrl]  — override the submit URL entirely
- */
 export default function PasswordModal({ open, onClose, user, actionUrl }) {
     const { data, setData, put, processing, errors, reset } = useForm({
         current_password: '',
@@ -107,10 +95,7 @@ export default function PasswordModal({ open, onClose, user, actionUrl }) {
                     >
                         {processing ? (
                             <>
-                                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                </svg>
+                                <Loader2 className="h-4 w-4 animate-spin" />
                                 Modification...
                             </>
                         ) : (isReset ? 'Réinitialiser' : 'Modifier le mot de passe')}

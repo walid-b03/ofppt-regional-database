@@ -1,23 +1,8 @@
-import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronDown, Loader2, Trash2 } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import Modal from './Modal';
 
-/**
- * Single field renderer — input, select, or textarea.
- *
- * @param {Object}   props
- * @param {string}   props.name       — field key (used for label + id)
- * @param {string}   props.label      — human-readable label
- * @param {string}   props.value      — current value
- * @param {string}   [props.error]    — validation error message
- * @param {Function} props.onChange   — (name, value) => void
- * @param {string}   [props.type]     — 'text' | 'email' | 'number' | 'date' | 'password'
- * @param {Array}    [props.options]  — [{value, label}] for select fields
- * @param {boolean}  [props.textarea] — render as textarea
- * @param {boolean}  [props.checkbox] — render as checkbox (value becomes boolean)
- * @param {string}   [props.placeholder]
- * @param {number}   [props.rows]     — textarea rows
- * @param {string}   [props.className] — extra wrapper classes
- */
 function Field({
     name, label, value, error, onChange,
     type = 'text', options, textarea, checkbox,
@@ -29,7 +14,6 @@ function Field({
         ? 'border-red-400 bg-red-50'
         : 'border-stone-200 focus:border-indigo-500';
 
-    // Checkbox
     if (checkbox) {
         return (
             <div className={`space-y-1.5 ${className}`}>
@@ -47,7 +31,6 @@ function Field({
         );
     }
 
-    // Select
     if (options) {
         const emptyVal = value === '' || value === null || value === undefined;
         return (
@@ -76,7 +59,6 @@ function Field({
         );
     }
 
-    // Textarea
     if (textarea) {
         return (
             <div className={`space-y-1.5 ${className}`}>
@@ -96,7 +78,6 @@ function Field({
         );
     }
 
-    // Default input
     return (
         <div className={`space-y-1.5 ${className}`}>
             <label htmlFor={name} className="block text-sm font-medium text-stone-700">
@@ -115,74 +96,124 @@ function Field({
     );
 }
 
-/**
- * Reusable form card — wraps fields in a styled card with submit/cancel footer.
- *
- * @param {Object}   props
- * @param {string}   props.title       — card heading
- * @param {string}   [props.subtitle]  — card subtitle
- * @param {string}   props.cancelHref  — URL for cancel button
- * @param {Function} props.onSubmit    — (e) => void
- * @param {boolean}  props.processing  — form is submitting
- * @param {string}   [props.submitLabel='Enregistrer']
- * @param {Array}    props.fields      — field config objects passed to <Field>
- * @param {ReactNode} [props.extra]    — extra content below fields (e.g. password button)
- */
 export default function FormCard({
     title, subtitle, cancelHref, onSubmit, processing,
-    submitLabel = 'Enregistrer', fields = [], extra,
+    submitLabel = 'Enregistrer', fields = [], extraFields = [], extra,
+    isCreate, banner,
+    showDelete, onDelete, deleteTitle,
+    deleteZoneTitle = 'Zone dangereuse',
+    deleteZoneDescription,
+    deleteModalDescription,
 }) {
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteProcessing, setDeleteProcessing] = useState(false);
+
+    const handleDelete = () => {
+        setDeleteProcessing(true);
+        onDelete?.();
+    };
+
+    const isProcessing = processing || deleteProcessing;
+
     return (
-        <div className="rounded-xl border border-stone-200 bg-white shadow-sm">
-            {/* Header */}
-            <div className="border-b border-stone-100 px-6 py-4">
-                <h3 className="text-sm font-semibold text-stone-900">{title}</h3>
-                {subtitle && <p className="mt-0.5 text-xs text-stone-500">{subtitle}</p>}
+        <div>
+            {!isCreate && banner && (
+                <div className="mb-6">
+                    {banner}
+                </div>
+            )}
+
+            <div className="rounded-xl border border-stone-200 bg-white shadow-sm">
+                <div className="border-b border-stone-100 px-6 py-4">
+                    <h3 className="text-sm font-semibold text-stone-900">{title}</h3>
+                </div>
+
+                <form onSubmit={onSubmit}>
+                    <div className="grid grid-cols-1 gap-5 p-6 sm:grid-cols-3">
+                        {fields.filter(f => !f.fullWidth).map(f => (
+                            <Field key={f.name} {...f} />
+                        ))}
+                    </div>
+
+                    {fields.filter(f => f.fullWidth).map(f => (
+                        <div key={f.name} className="px-6 pb-5">
+                            <Field {...f} />
+                        </div>
+                    ))}
+
+                    {extraFields.length > 0 && (
+                        <div className="grid grid-cols-1 gap-5 px-6 pb-5 sm:grid-cols-3">
+                            {extraFields.map(f => (
+                                <Field key={f.name} {...f} />
+                            ))}
+                        </div>
+                    )}
+
+                    {extra && <div className="px-6 pb-5">{extra}</div>}
+
+                    <div className="flex items-center justify-end gap-3 border-t border-stone-100 bg-stone-50 px-6 py-4">
+                        <Link
+                            href={cancelHref}
+                            className="rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:bg-stone-50"
+                        >
+                            Annuler
+                        </Link>
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-200 hover:bg-indigo-700 disabled:pointer-events-none disabled:opacity-60"
+                        >
+                            {processing ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Enregistrement...
+                                </>
+                            ) : submitLabel}
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <form onSubmit={onSubmit}>
-                {/* Fields — 3-col grid */}
-                <div className="grid grid-cols-1 gap-5 p-6 sm:grid-cols-3">
-                    {fields.filter(f => !f.fullWidth).map(f => (
-                        <Field key={f.name} {...f} />
-                    ))}
-                </div>
-
-                {/* Full-width fields */}
-                {fields.filter(f => f.fullWidth).map(f => (
-                    <div key={f.name} className="px-6 pb-5">
-                        <Field {...f} />
-                    </div>
-                ))}
-
-                {/* Extra content (e.g. password button) */}
-                {extra && <div className="px-6 pb-5">{extra}</div>}
-
-                {/* Footer */}
-                <div className="flex items-center justify-end gap-3 border-t border-stone-100 bg-stone-50 px-6 py-4">
-                    <Link
-                        href={cancelHref}
-                        className="rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:bg-stone-50"
-                    >
-                        Annuler
-                    </Link>
+            {showDelete && onDelete && (
+                <div className="mt-6 rounded-xl border border-red-200 bg-red-50/50 p-6">
+                    <h3 className="text-sm font-semibold text-red-800">{deleteZoneTitle}</h3>
+                    <p className="mt-1 text-xs text-red-600">
+                        {deleteZoneDescription || 'Cette action est irréversible.'}
+                    </p>
                     <button
-                        type="submit"
-                        disabled={processing}
-                        className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-200 hover:bg-indigo-700 disabled:pointer-events-none disabled:opacity-60"
+                        onClick={() => setShowDeleteModal(true)}
+                        className="mt-4 inline-flex items-center gap-2 rounded-xl border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 shadow-sm transition-all duration-200 hover:bg-red-50"
                     >
-                        {processing ? (
-                            <>
-                                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                </svg>
-                                Enregistrement...
-                            </>
-                        ) : submitLabel}
+                        <Trash2 className="h-4 w-4" />
+                        {deleteTitle || 'Supprimer'}
                     </button>
                 </div>
-            </form>
+            )}
+
+            <Modal
+                open={showDeleteModal}
+                onClose={() => !isProcessing && setShowDeleteModal(false)}
+                title="Confirmer la suppression"
+                description={deleteModalDescription || 'Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.'}
+                footer={
+                    <>
+                        <button
+                            onClick={() => !isProcessing && setShowDeleteModal(false)}
+                            disabled={isProcessing}
+                            className="rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:bg-stone-50 disabled:opacity-60"
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            onClick={handleDelete}
+                            disabled={isProcessing}
+                            className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition-all duration-200 hover:bg-red-700 disabled:pointer-events-none disabled:opacity-60"
+                        >
+                            {isProcessing ? 'Suppression...' : 'Supprimer'}
+                        </button>
+                    </>
+                }
+            />
         </div>
     );
 }

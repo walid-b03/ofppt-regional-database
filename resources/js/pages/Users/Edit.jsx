@@ -1,126 +1,106 @@
-import { Head, Link, useForm, router, usePage } from '@inertiajs/react';
-import Dashboard from '../../layout/Dashboard';
-import FormCard from '../../components/FormCard';
-import PasswordModal from '../../components/PasswordModal';
-import { useState } from 'react';
-import Modal from '../../components/Modal';
-import { Lock, Trash2 } from 'lucide-react';
-import { ROLE_LABELS } from '../../lib/constants';
-import { getRoutePrefix } from '../../lib/routes';
+import { Head, useForm, router, usePage } from "@inertiajs/react";
+import Dashboard from "../../layout/Dashboard";
+import UserFormCard from "../../components/UserFormCard";
+import { MARITAL_OPTIONS, RANK_OPTIONS, ROLE_LABELS } from "../../lib/constants";
+import { LABEL_MAP } from "../../components/UserInfoCard";
 
-export default function Edit({ user: serverUser, establishments, availableRoles }) {
-    const prefix = getRoutePrefix('users', { drrg: 'users', drcx: 'users', drpd: 'users' });
+export default function Edit({ user, availableEstablishments, availableRoles }) {
     const { auth } = usePage().props;
-    const [showDelete, setShowDelete] = useState(false);
-    const [processing, setProcessing] = useState(false);
-    const [pwOpen, setPwOpen] = useState(false);
+    const isAdmin = auth?.user?.role === "admin";
+    const canDelete = isAdmin && user.id !== auth?.user?.id;
 
     const { data, setData, put, processing: saving, errors } = useForm({
-        code: serverUser.code ?? '',
-        first_name: serverUser.first_name ?? '',
-        last_name: serverUser.last_name ?? '',
-        cin: serverUser.cin ?? '',
-        email: serverUser.email ?? '',
-        phone: serverUser.phone ?? '',
-        role: serverUser.role ?? '',
-        establishment_id: serverUser.establishment_id ?? '',
+        code: user.code ?? "",
+        first_name: user.first_name ?? "",
+        last_name: user.last_name ?? "",
+        cin: user.cin ?? "",
+        email: user.email ?? "",
+        phone: user.phone ?? "",
+        role: user.role ?? "",
+        establishment_id: user.establishment_id ?? "",
+        marital_status: user.marital_status ?? "",
+        children: user.children ?? "",
+        address: user.address ?? "",
+        date_of_birth: user.date_of_birth ?? "",
+        date_of_recruitment: user.date_of_recruitment ?? "",
+        diploma: user.diploma ?? "",
+        rank: user.rank ?? "",
+        role_label: user.role_label ?? "",
     });
+
+    const establishmentOptions = availableEstablishments.map(e => ({ value: e.id, label: e.name }));
+    const roleOptions = Object.entries(ROLE_LABELS).map(([v, l]) => ({ value: v, label: l }));
+
+    const baseFields = isAdmin
+        ? [
+            { name: "code", label: LABEL_MAP.code || "Code", value: data.code, error: errors.code, onChange: setData },
+            { name: "first_name", label: LABEL_MAP.first_name || "Prénom", value: data.first_name, error: errors.first_name, onChange: setData },
+            { name: "last_name", label: LABEL_MAP.last_name || "Nom", value: data.last_name, error: errors.last_name, onChange: setData },
+            { name: "cin", label: LABEL_MAP.cin || "CIN", value: data.cin, error: errors.cin, onChange: setData },
+            { name: "marital_status", label: LABEL_MAP.marital_status || "État civil", value: data.marital_status, error: errors.marital_status, onChange: setData, options: MARITAL_OPTIONS },
+            { name: "children", label: LABEL_MAP.children || "Nombre d'enfants", value: data.children, error: errors.children, onChange: setData, type: "number" },
+            { name: "email", label: LABEL_MAP.email || "Email", value: data.email, error: errors.email, onChange: setData, type: "email" },
+            { name: "phone", label: LABEL_MAP.phone || "Téléphone", value: data.phone, error: errors.phone, onChange: setData },
+            { name: "date_of_birth", label: LABEL_MAP.date_of_birth || "Date de naissance", value: data.date_of_birth, error: errors.date_of_birth, onChange: setData, type: "date" },
+            { name: "date_of_recruitment", label: LABEL_MAP.date_of_recruitment || "Date de recrutement", value: data.date_of_recruitment, error: errors.date_of_recruitment, onChange: setData, type: "date" },
+            { name: "diploma", label: LABEL_MAP.diploma || "Diplôme", value: data.diploma, error: errors.diploma, onChange: setData },
+            { name: "rank", label: LABEL_MAP.rank || "Grade", value: data.rank, error: errors.rank, onChange: setData, options: RANK_OPTIONS },
+        ]
+        : [
+            { name: "first_name", label: LABEL_MAP.first_name || "Prénom", value: data.first_name, error: errors.first_name, onChange: setData },
+            { name: "last_name", label: LABEL_MAP.last_name || "Nom", value: data.last_name, error: errors.last_name, onChange: setData },
+            { name: "cin", label: LABEL_MAP.cin || "CIN", value: data.cin, error: errors.cin, onChange: setData },
+            { name: "marital_status", label: LABEL_MAP.marital_status || "État civil", value: data.marital_status, error: errors.marital_status, onChange: setData, options: MARITAL_OPTIONS },
+            { name: "children", label: LABEL_MAP.children || "Nombre d'enfants", value: data.children, error: errors.children, onChange: setData, type: "number" },
+            { name: "email", label: LABEL_MAP.email || "Email", value: data.email, error: errors.email, onChange: setData, type: "email" },
+            { name: "phone", label: LABEL_MAP.phone || "Téléphone", value: data.phone, error: errors.phone, onChange: setData },
+            { name: "date_of_birth", label: LABEL_MAP.date_of_birth || "Date de naissance", value: data.date_of_birth, error: errors.date_of_birth, onChange: setData, type: "date" },
+            { name: "date_of_recruitment", label: LABEL_MAP.date_of_recruitment || "Date de recrutement", value: data.date_of_recruitment, error: errors.date_of_recruitment, onChange: setData, type: "date" },
+            { name: "diploma", label: LABEL_MAP.diploma || "Diplôme", value: data.diploma, error: errors.diploma, onChange: setData },
+            { name: "rank", label: LABEL_MAP.rank || "Grade", value: data.rank, error: errors.rank, onChange: setData, options: RANK_OPTIONS },
+        ];
+
+    const extraFields = isAdmin
+        ? [
+            { name: "role", label: "Rôle", value: data.role, error: errors.role, onChange: setData, options: roleOptions },
+            { name: "role_label", label: LABEL_MAP.role_label || "Fonction", value: data.role_label, error: errors.role_label, onChange: setData },
+            { name: "establishment_id", label: "Établissement", value: data.establishment_id, error: errors.establishment_id, onChange: setData, options: establishmentOptions },
+        ]
+        : [];
+
+    const addressField = { name: "address", label: LABEL_MAP.address || "Adresse", value: data.address, error: errors.address, onChange: setData, textarea: true };
 
     function handleSubmit(e) {
         e.preventDefault();
-        put(`/${prefix}/${serverUser.id}`);
+        put(`/users/${user.id}`, { preserveScroll: true });
     }
 
     function handleDelete() {
-        setProcessing(true);
-        router.delete(`/${prefix}/${serverUser.id}`, {
-            onSuccess: () => router.visit(`/${prefix}`),
-            onFinish: () => setProcessing(false),
+        router.delete(`/users/${user.id}`, {
+            onSuccess: () => router.visit("/users"),
         });
     }
 
     return (
-        <Dashboard title={`Modifier — ${serverUser.first_name} ${serverUser.last_name}`}>
-            <Head title={`Modifier ${serverUser.first_name} — OFPPT`} />
+        <Dashboard title={`Modifier — ${user.first_name} ${user.last_name}`}>
+            <Head title={`Modifier ${user.first_name} — OFPPT`} />
 
-            <div className="mx-auto max-w-3xl space-y-6">
-                <Link href={`/${prefix}`} className="inline-flex items-center gap-2 text-sm font-medium text-stone-500 transition-colors hover:text-indigo-600">
-                    <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L4.414 10H19a1 1 0 110 2H4.414l3.293 3.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                    </svg>
-                    Retour
-                </Link>
-
-                <FormCard
-                    title="Modifier le membre du personnel"
-                    subtitle={`${serverUser.code} — ${ROLE_LABELS[serverUser.role]}`}
-                    cancelHref={`/${prefix}`}
+            <div className="mx-auto max-w-5xl space-y-6">
+                <UserFormCard
+                    title="Informations du membre"
+                    cancelHref="/users"
                     onSubmit={handleSubmit}
                     processing={saving}
-                    fields={[
-                        { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
-                        { name: 'first_name', label: 'Prénom', value: data.first_name, error: errors.first_name, onChange: setData },
-                        { name: 'last_name', label: 'Nom', value: data.last_name, error: errors.last_name, onChange: setData },
-                        { name: 'cin', label: 'CIN', value: data.cin, error: errors.cin, onChange: setData },
-                        {
-                            name: 'role',
-                            label: 'Rôle',
-                            value: data.role,
-                            error: errors.role,
-                            onChange: setData,
-                            options: availableRoles.map(r => ({ value: r, label: ROLE_LABELS[r] || r })),
-                        },
-                        {
-                            name: 'establishment_id',
-                            label: 'Établissement',
-                            value: data.establishment_id,
-                            error: errors.establishment_id,
-                            onChange: setData,
-                            options: establishments.map(e => ({ value: e.id, label: e.name })),
-                        },
-                        { name: 'email', label: 'Email', type: 'email', value: data.email, error: errors.email, onChange: setData },
-                        { name: 'phone', label: 'Téléphone', value: data.phone, error: errors.phone, onChange: setData },
-                    ]}
-                    extra={
-                        <button
-                            type="button"
-                            onClick={() => setPwOpen(true)}
-                            className="group/btn inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:bg-stone-50 hover:text-stone-900"
-                        >
-                            <Lock className="h-4 w-4 text-stone-400 transition-colors group-hover/btn:text-indigo-500" />
-                            Changer le mot de passe
-                        </button>
-                    }
+                    fields={[...baseFields, addressField]}
+                    extraFields={extraFields}
+                    showPassword={true}
+                    user={user}
+                    showDelete={canDelete}
+                    onDelete={handleDelete}
+                    dangerZoneTitle="Zone dangereuse"
+                    dangerZoneDescription="La suppression de ce membre du personnel est irréversible."
                 />
-
-                {serverUser.id !== auth?.user?.id && (
-                    <div className="rounded-xl border border-red-200 bg-red-50/50 p-6">
-                        <h3 className="text-sm font-semibold text-red-800">Zone dangereuse</h3>
-                        <p className="mt-1 text-xs text-red-600">La suppression de ce membre du personnel est irréversible.</p>
-                        <button onClick={() => setShowDelete(true)} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50">
-                            <Trash2 className="h-4 w-4" />
-                            Supprimer le membre
-                        </button>
-                    </div>
-                )}
             </div>
-
-            {/* Password modal */}
-            <PasswordModal open={pwOpen} onClose={() => setPwOpen(false)} user={serverUser} />
-
-            {/* Delete modal */}
-            <Modal
-                open={showDelete}
-                onClose={() => !processing && setShowDelete(false)}
-                title="Confirmer la suppression"
-                description={`Êtes-vous sûr de vouloir supprimer "${serverUser.first_name} ${serverUser.last_name}" ?`}
-                footer={
-                    <>
-                        <button onClick={() => !processing && setShowDelete(false)} disabled={processing} className="rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 shadow-sm hover:bg-stone-50 disabled:opacity-60">Annuler</button>
-                        <button onClick={handleDelete} disabled={processing} className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 hover:bg-red-700 disabled:pointer-events-none disabled:opacity-60">{processing ? 'Suppression...' : 'Supprimer'}</button>
-                    </>
-                }
-            />
         </Dashboard>
     );
 }

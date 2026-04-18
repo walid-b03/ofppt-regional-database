@@ -1,11 +1,9 @@
 import { Head, useForm } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
-import FormCard from '../../components/FormCard';
+import EntityFormCard from '../../components/EntityFormCard';
 import { ASSET_STATE_OPTIONS } from '../../lib/constants';
-import { getRoutePrefix } from '../../lib/routes';
 
-export default function Create({ establishments }) {
-    const prefix = getRoutePrefix('assets');
+export default function Create({ availableEstablishments }) {
     const { data, setData, post, processing, errors } = useForm({
         code: '',
         name: '',
@@ -18,19 +16,20 @@ export default function Create({ establishments }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(`/${prefix}`);
+        post('/assets');
     }
 
     return (
         <Dashboard title="Ajouter un actif">
             <Head title="Ajouter un actif — OFPPT" />
 
-            <FormCard
+            <EntityFormCard
                 title="Nouvel actif"
-                subtitle="Remplissez les informations de l'actif"
-                cancelHref={`/${prefix}`}
+                cancelHref="/assets"
                 onSubmit={handleSubmit}
                 processing={processing}
+                isCreate={true}
+                showDelete={false}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },
@@ -40,7 +39,7 @@ export default function Create({ establishments }) {
                         value: data.establishment_id,
                         error: errors.establishment_id,
                         onChange: setData,
-                        options: establishments.map(e => ({ value: e.id, label: e.name })),
+                        options: availableEstablishments.map(e => ({ value: e.id, label: e.name })),
                     },
                     { name: 'type', label: 'Type', value: data.type, error: errors.type, onChange: setData },
                     { name: 'state', label: 'État', value: data.state, error: errors.state, onChange: setData, options: ASSET_STATE_OPTIONS },

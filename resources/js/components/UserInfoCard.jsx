@@ -22,11 +22,11 @@ export const ICON_MAP = {
 };
 
 export const LABEL_MAP = {
-    first_name: 'Prénom', last_name: 'Nom', cin: 'CIN',
+    first_name: 'Prénom', last_name: 'Nom', cin: 'CIN', code: 'Code',
     marital_status: 'État civil', children: 'Nombre d\'enfants',
     email: 'Email', phone: 'Téléphone', address: 'Adresse',
     date_of_birth: 'Date de naissance', date_of_recruitment: 'Date de recrutement',
-    diploma: 'Diplôme', rank: 'Grade', role_label: 'Fonction',
+    diploma: 'Diplôme', rank: 'Grade', role_label: 'Fonction', role: 'Rôle',
 };
 
 export function formatDate(val) {
@@ -34,16 +34,6 @@ export function formatDate(val) {
     return new Date(val).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
-/**
- * Reusable read-only info card.
- *
- * @param {Object} props
- * @param {string}   props.title     — card heading
- * @param {string}   props.icon      — icon key (see ICO above)
- * @param {string}   [props.badge]   — optional top-right badge
- * @param {Array}    props.items     — [[label, value], ...] tuples
- * @param {Function} [props.onEdit]  — if supplied, shows pencil btn + navigates
- */
 export default function UserInfoCard({ title, icon, badge, items, onEdit }) {
     const IconEl = ICO[icon] || User;
     const hasData = items.some(([, v]) => v);

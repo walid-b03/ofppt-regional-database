@@ -1,11 +1,9 @@
 import { Head, useForm } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
-import FormCard from '../../components/FormCard';
+import EntityFormCard from '../../components/EntityFormCard';
 import { TRAINING_TYPE_OPTIONS, TRAINING_LEVEL_OPTIONS } from '../../lib/constants';
-import { getRoutePrefix } from '../../lib/routes';
 
-export default function Create({ establishments }) {
-    const prefix = getRoutePrefix('trainings');
+export default function Create({ availableEstablishments }) {
     const { data, setData, post, processing, errors } = useForm({
         code: '',
         name: '',
@@ -19,19 +17,20 @@ export default function Create({ establishments }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        post(`/${prefix}`);
+        post('/trainings');
     }
 
     return (
         <Dashboard title="Ajouter une formation">
             <Head title="Ajouter une formation — OFPPT" />
 
-            <FormCard
+            <EntityFormCard
                 title="Nouvelle formation"
-                subtitle="Remplissez les informations de la formation"
-                cancelHref={`/${prefix}`}
+                cancelHref="/trainings"
                 onSubmit={handleSubmit}
                 processing={processing}
+                isCreate={true}
+                showDelete={false}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },
@@ -41,7 +40,7 @@ export default function Create({ establishments }) {
                         value: data.establishment_id,
                         error: errors.establishment_id,
                         onChange: setData,
-                        options: establishments.map(e => ({ value: e.id, label: e.name })),
+                        options: availableEstablishments.map(e => ({ value: e.id, label: e.name })),
                     },
                     { name: 'type', label: 'Type', value: data.type, error: errors.type, onChange: setData, options: TRAINING_TYPE_OPTIONS },
                     { name: 'level', label: 'Niveau', value: data.level, error: errors.level, onChange: setData, options: TRAINING_LEVEL_OPTIONS },

@@ -1,7 +1,6 @@
 import { Head } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import DataTable from '../../components/DataTable';
-import { getRoutePrefix } from '../../lib/routes';
 
 const STATE_COLORS = {
     'Actif': 'bg-emerald-50 text-emerald-700 ring-emerald-100',
@@ -10,8 +9,8 @@ const STATE_COLORS = {
     'Perdu': 'bg-amber-50 text-amber-700 ring-amber-100',
 };
 
-export default function Index({ assets }) {
-    const prefix = getRoutePrefix('assets');
+export default function Index({ assets, auth }) {
+    const canFilter = auth?.user?.role === 'admin' || auth?.user?.role === 'DRRG' || auth?.user?.role === 'DRCX';
     const uniqueEstablishments = [...new Map(assets.map(a => [a.establishment?.id, a.establishment])).values()].filter(Boolean);
 
     return (
@@ -43,19 +42,23 @@ export default function Index({ assets }) {
                         render: a => a.establishment?.name || <span className="text-stone-400">—</span>,
                     },
                 ]}
-                createHref={`/${prefix}/create`}
-                showPrefix={prefix}
-                editPrefix={prefix}
-                destroyPrefix={prefix}
-                searchPlaceholder="Rechercher un actif..."
-                filters={[
-                    {
-                        key: 'establishment',
-                        label: 'Établissement',
-                        getter: a => a.establishment?.name,
-                        options: uniqueEstablishments.map(e => ({ value: e.name, label: e.name })),
-                    },
-                ]}
+                createHref="/assets/create"
+                showPrefix="assets"
+                editPrefix="assets"
+                searchPlaceholder="Rechercher par code ou nom..."
+                searchKeys={['code', 'name']}
+                filters={
+                    canFilter
+                        ? [
+                              {
+                                  key: 'establishment',
+                                  label: 'Établissement',
+                                  getter: a => a.establishment?.name,
+                                  options: uniqueEstablishments.map(e => ({ value: e.name, label: e.name })),
+                              },
+                          ]
+                        : []
+                }
                 emptyMessage="Aucun actif trouvé"
             />
         </Dashboard>

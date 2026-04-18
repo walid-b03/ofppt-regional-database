@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 export default function Modal({ open, onClose, title, description, children, footer, size = 'md' }) {
 
@@ -54,9 +55,7 @@ export default function Modal({ open, onClose, title, description, children, foo
                             onClick={onClose}
                             className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 transition hover:bg-stone-100 hover:text-stone-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                         >
-                            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                            </svg>
+                            <X className="h-5 w-5" />
                         </button>
                     </div>
 

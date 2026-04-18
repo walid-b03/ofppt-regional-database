@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm, Head } from '@inertiajs/react';
-import { User, Lock, Eye, EyeOff, Check } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Check, Loader2 } from 'lucide-react';
 
 export default function Home() {
     const [showPassword, setShowPassword] = useState(false);
@@ -22,15 +22,12 @@ export default function Home() {
             <Head title="Connexion — OFPPT" />
             <div className="min-h-screen flex flex-col lg:flex-row bg-stone-50 font-sans">
 
-                {/* ── Left Panel: Branding ── */}
                 <div className="relative hidden lg:flex lg:w-1/2 xl:w-[55%] flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-800 via-indigo-900 to-stone-900 text-white p-12 xl:p-20">
 
-                    {/* Decorative blobs */}
                     <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-indigo-600/20 blur-3xl" />
                     <div className="pointer-events-none absolute bottom-0 right-0 h-[28rem] w-[28rem] rounded-full bg-indigo-500/10 blur-3xl" />
                     <div className="pointer-events-none absolute top-1/2 left-1/3 h-64 w-64 rounded-full bg-white/5 blur-2xl" />
 
-                    {/* Logo */}
                     <div className="relative z-10">
                         <img
                             src="/ofppt.svg"
@@ -39,7 +36,6 @@ export default function Home() {
                         />
                     </div>
 
-                    {/* Headline */}
                     <div className="relative z-10 max-w-lg space-y-6">
                         <h1 className="text-3xl xl:text-4xl font-semibold leading-[1.15] tracking-tight">
                             Portail de Gestion des Données Régionales
@@ -48,7 +44,6 @@ export default function Home() {
                             Bienvenue sur la plateforme dédiée à la gestion centralisée des complexes, établissements, formations et ressources de l&#39;OFPPT à l&#39;échelle régionale. Cet espace sécurisé permet aux responsables de piloter l&#39;ensemble des données administratives et pédagogiques en toute simplicité.
                         </p>
 
-                        {/* Subtle feature pills */}
                         <div className="flex flex-wrap gap-3 pt-2">
                             {['Multi-rôle', 'Données centralisées', 'Hiérarchie régionale'].map((tag) => (
                                 <span
@@ -62,7 +57,6 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Footer */}
                     <div className="relative z-10">
                         <p className="text-sm text-indigo-200/50">
                             © 2026 OFPPT — Tous droits réservés
@@ -70,10 +64,8 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* ── Right Panel: Form ── */}
                 <div className="flex flex-1 flex-col items-center lg:justify-center px-6 py-6 sm:px-12 lg:px-16 xl:px-24 lg:py-12">
 
-                    {/* Mobile logo */}
                     <div className="mb-6 lg:hidden">
                         <img
                             src="/ofppt.svg"
@@ -82,10 +74,8 @@ export default function Home() {
                         />
                     </div>
 
-                    {/* Form card */}
                     <div className="w-full max-w-md space-y-8">
 
-                        {/* Header */}
                         <div className="space-y-2">
                             <h2 className="text-2xl font-semibold tracking-tight text-stone-900">
                                 Connexion
@@ -95,10 +85,8 @@ export default function Home() {
                             </p>
                         </div>
 
-                        {/* Form */}
                         <form onSubmit={handleSubmit} className="space-y-5">
 
-                            {/* Error Alert */}
                             {error && (
                                 <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 animate-[fadeIn_0.3s_ease]">
                                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-medium text-red-600">
@@ -108,7 +96,6 @@ export default function Home() {
                                 </div>
                             )}
 
-                            {/* Identifier Field */}
                             <div className="space-y-1.5">
                                 <label
                                     htmlFor="code"
@@ -132,7 +119,6 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* Password Field */}
                             <div className="space-y-1.5">
                                 <label
                                     htmlFor="password"
@@ -167,8 +153,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* Remember + Forgot */}
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center">
                                 <label className="group flex cursor-pointer items-center gap-2.5">
                                     <div className="relative flex items-center">
                                         <input
@@ -186,16 +171,8 @@ export default function Home() {
                                     </div>
                                     <span className="text-sm text-stone-600 select-none">Se souvenir de moi</span>
                                 </label>
-                                <a
-                                    href="#"
-                                    onClick={(e) => e.preventDefault()}
-                                    className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-700 focus:outline-none focus-visible:underline"
-                                >
-                                    Mot de passe oublié ?
-                                </a>
                             </div>
 
-                            {/* Submit Button */}
                             <button
                                 type="submit"
                                 disabled={processing}
@@ -203,10 +180,7 @@ export default function Home() {
                             >
                                 {processing ? (
                                     <>
-                                        <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                        </svg>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
                                         Connexion en cours...
                                     </>
                                 ) : (

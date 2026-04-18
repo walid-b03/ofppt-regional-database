@@ -1,11 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import DataTable from '../../components/DataTable';
-import { getRoutePrefix } from '../../lib/routes';
 
 export default function Index({ regions }) {
-    const prefix = getRoutePrefix('regions', { drrg: 'region' });
-
     return (
         <Dashboard title="Régions">
             <Head title="Régions — OFPPT" />
@@ -33,11 +30,11 @@ export default function Index({ regions }) {
                         render: r => r.phone || <span className="text-stone-400">—</span>,
                     },
                 ]}
-                createHref={`/${prefix}/create`}
-                showPrefix={prefix}
-                editPrefix={prefix}
-                destroyPrefix={prefix}
-                searchPlaceholder="Rechercher une région..."
+                createHref="/regions/create"
+                showPrefix="regions"
+                editPrefix="regions"
+                searchPlaceholder="Rechercher par code ou nom..."
+                searchKeys={['code', 'name']}
                 emptyMessage="Aucune région trouvée"
             />
         </Dashboard>
