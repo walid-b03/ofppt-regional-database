@@ -21,13 +21,12 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, User $user)
+    public function show(User $user)
     {
         $this->authorize('view', $user);
 
         $user->load([
             'establishment:id,code,name,head_id,complex_id',
-            'establishment.complex:id,head_id,region_id',
             'headedEstablishment:id,code,name,head_id,complex_id',
             'headedComplex:id,code,name,head_id,region_id',
             'headedRegion:id,code,name,head_id',

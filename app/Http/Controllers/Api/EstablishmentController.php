@@ -21,7 +21,7 @@ class EstablishmentController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Establishment $establishment)
+    public function show(Establishment $establishment)
     {
         $this->authorize('view', $establishment);
 

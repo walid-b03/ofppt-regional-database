@@ -22,7 +22,7 @@ class RoomController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Room $room)
+    public function show(Room $room)
     {
         $this->authorize('view', $room);
 

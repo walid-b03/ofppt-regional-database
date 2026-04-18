@@ -21,7 +21,7 @@ class ComplexController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Complex $complex)
+    public function show(Complex $complex)
     {
         $this->authorize('view', $complex);
 

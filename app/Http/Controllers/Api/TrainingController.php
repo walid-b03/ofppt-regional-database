@@ -22,7 +22,7 @@ class TrainingController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Training $training)
+    public function show(Training $training)
     {
         $this->authorize('view', $training);
 

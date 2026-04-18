@@ -1,58 +1,283 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Base de Données Régionale OFPPT
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Système centralisé de gestion des entités régionales OFPPT. Fournit un tableau de bord web pour la gestion administrative et une API REST pour les applications satellites.
 
-## About Laravel
+## Architecture
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+┌───────────────────────────────────────────────────────────┐
+│                         Ce Projet                         │
+│                   (Laravel + Inertia)                     │
+├───────────────────────────────────────────────────────────┤
+│  Tableau de bord (Inertia)  │    API REST (Sanctum)       │
+│  /routes/web.php            │    /routes/api.php          │
+├───────────────────────────────────────────────────────────┤
+│  Models / Policies / Scopes │    Controllers / Resources  │
+└───────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌───────────────────────────────────────────────────────────┐
+│                   Applications Satellites                 │
+│  - Gestion des Attestations                               │
+│  - (futures applications...)                              │
+└───────────────────────────────────────────────────────────┘
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Rôles du Personnel
 
-## Contributing
+| Rôle | Libellé | Portée d'Accès |
+|------|--------|---------------|
+| `admin` | Administrateur | Global (toutes les entités) |
+| `DRRG` | Directeur Régional | Sa Région |
+| `DRCX` | Directeur de Complexe | Son Complexe |
+| `DRPD` | Directeur Pédagogique | Son Établissement |
+| `AGAD` | Agent Administratif | Son Établissement (écriture: formations, biens, salles) |
+| `FRMT` | Formateur | Son Profil uniquement |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Hiérarchie des Données
 
-## Code of Conduct
+```
+Région (DRRG)
+  └─ Complexe (DRCX)
+       └─ Établissement (DRPD, AGAD, FRMT)
+            ├─ Personnel
+            ├─ Formation
+            ├─ Actif
+            └─ Salle
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Modèles
 
-## Security Vulnerabilities
+- **Region** - Région administrative (ex: Tanger-Tétouan)
+- **Complex** - Complexe de formation au sein d'une région
+- **Establishment** - Établissement spécifique au sein d'un complexe
+- **User** - Personnel avec rôles
+- **Training** - Programmes de formation
+- **Asset** - Actifs
+- **Room** - Salles physiques
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Points de Terminaison API
 
-## License
+Tous les points de terminaison (sauf connexion) nécessitent une authentification Sanctum via l'en-tête `Authorization: Bearer <token>`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Authentification
+
+| Méthode | Point de Terminaison | Description |
+|--------|---------------------|-------------|
+| POST | `/api/auth/login` | Connexion avec code/mot de passe |
+| POST | `/api/auth/logout` | Déconnexion (suppression du token) |
+| GET | `/api/user` | Obtenir l'utilisateur actuel |
+
+### Lecture Seule (Hiérarchie)
+
+| Méthode | Point de Terminaison | Description |
+|--------|---------------------|-------------|
+| GET | `/api/regions` | Liste des régions |
+| GET | `/api/regions/{region}` | Obtenir une région |
+| GET | `/api/complexes` | Liste des complexes |
+| GET | `/api/complexes/{complex}` | Obtenir un complexe |
+| GET | `/api/establishments` | Liste des établissements |
+| GET | `/api/establishments/{establishment}` | Obtenir un établissement |
+| GET | `/api/users` | Liste des utilisateurs |
+| GET | `/api/users/{user}` | Obtenir un utilisateur |
+
+### Lecture + Écriture (Opérationnel)
+
+| Méthode | Point de Terminaison | Description |
+|--------|---------------------|-------------|
+| GET | `/api/trainings` | Liste des formations |
+| GET | `/api/trainings/{training}` | Obtenir une formation |
+| POST | `/api/trainings` | Créer une formation |
+| PUT | `/api/trainings/{training}` | Modifier une formation |
+| GET | `/api/assets` | Liste des biens |
+| GET | `/api/assets/{asset}` | Obtenir un bien |
+| POST | `/api/assets` | Créer un bien |
+| PUT | `/api/assets/{asset}` | Modifier un bien |
+| GET | `/api/rooms` | Liste des salles |
+| GET | `/api/rooms/{room}` | Obtenir une salle |
+| POST | `/api/rooms` | Créer une salle |
+| PUT | `/api/rooms/{room}` | Modifier une salle |
+
+### Format de Réponse API
+
+```json
+{
+  "message": "Description de l'opération.",
+  "payload": { ... }
+}
+```
+
+### Exemple: Connexion
+
+```bash
+curl -X POST https://api.ofppt.local/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"code": "USR001", "password": "secret"}'
+```
+
+```json
+{
+  "message": "Connexion réussie.",
+  "payload": {
+    "id": 1,
+    "code": "USR001",
+    "first_name": "Admin",
+    "last_name": "User",
+    "role": "admin",
+    "establishment": null
+  },
+  "token": "1|aBcDeFgHiJkLmNoPqRsTuVwXyZ..."
+}
+```
+
+## Routes Web
+
+| Méthode | Contrôleur | Description |
+|--------|----------|-------------|
+| GET/POST | `/regions` | CRUD régions |
+| GET/POST | `/complexes` | CRUD complexes |
+| GET/POST | `/establishments` | CRUD établissements |
+| GET/POST | `/users` | CRUD utilisateurs |
+| GET/POST | `/trainings` | CRUD formations |
+| GET/POST | `/assets` | CRUD biens |
+| GET/POST | `/rooms` | CRUD salles |
+| GET/POST | `/profile` | Profil utilisateur |
+
+## Contrôle d'Accès Basé sur les Politiques
+
+Chaque modèle possède une Politique correspondante qui enforce:
+
+- **Admin** (`admin`): Accès complet à toutes les opérations
+- **DRRG**: Accès à sa région et en aval
+- **DRCX**: Accès à son complexe et en aval
+- **DRPD**: Accès à son établissement et en aval
+- **AGAD**: Lecture/écriture formations, biens, salles dans son établissement
+- **FRMT**: Accès lecture seule au profil
+
+### Comportement des Scopes
+
+| Modèle | Scope | Comportement |
+|-------|-------|------------|
+| Region | `forHead()` | Admin voit tout; DRRG voit seulement sa région |
+| Complex | `forHead()` | Admin voit tout; DRRG voit les complexes de sa région; DRCX voit seulement son complexe |
+| Establishment | `forHead()` | Admin voit tout; DRRG voit ceux de sa région; DRCX voit ceux de son complexe; DRPD/AGAD voient leur établissement |
+| Training | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD voient tout; FRMT ne voit rien |
+| Asset | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD voient tout; FRMT ne voit rien |
+| Room | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD voient tout; FRMT ne voit rien |
+| User | `forSuperior()` | Admin voit tout; DRRG voit sa région; DRCX voit son complexe; DRPD voit son établissement |
+
+## Fonctionnalités du Tableau de Bord par Rôle
+
+### Administrateur
+- **Régions**: CRUD total (filtrer par nom)
+- **Complexes**: CRUD total (filtrer par nom, régions)
+- **Établissements**: CRUD total (filtrer par nom, régions, complexes)
+- **Personnel**: CRUD total y compris mots de passe (filtrer par nom, régions, complexes, établissements)
+- **Formations**: CRUD total (filtrer par nom, régions, complexes, établissements)
+- **Actifs**: CRUD total (filtrer par nom, régions, complexes, établissements)
+- **Salles**: CRUD total (filtrer par nom, régions, complexes, établissements)
+
+### DRRG (Directeur Régional)
+- **Son Profil**: Modifier infos personnelles
+- **Sa Région**: CRUD sa région
+- **Ses Complexes**: CRUD ses complexes (filtrer par nom)
+- **Ses Établissements**: CRUD ses établissements (filtrer par nom, complexes)
+- **Son Personnel**: CRUD son personnel y compris mots de passe (filtrer par nom, complexes, établissements)
+- **Ses Formations**: CRUD ses formations (filtrer par nom, complexes, établissements)
+- **Ses Actifs**: CRUD ses actifs (filtrer par nom, complexes, établissements)
+- **Ses Salles**: CRUD ses salles (filtrer par nom, complexes, établissements)
+
+### DRCX (Directeur de Complexe)
+- **Son Profil**: Modifier infos personnelles
+- **Son Complexe**: CRUD son complexe
+- **Ses Établissements**: CRUD ses établissements (filtrer par nom)
+- **Son Personnel**: CRUD son personnel y compris mots de passe (filtrer par nom, établissements)
+- **Ses Formations**: CRUD ses formations (filtrer par nom, établissements)
+- **Ses Actifs**: CRUD ses actifs (filtrer par nom, établissements)
+- **Ses Salles**: CRUD ses salles (filtrer par nom, établissements)
+
+### DRPD (Directeur Pédagogique)
+- **Son Profil**: Modifier infos personnelles
+- **Son Établissement**: CRUD son établissement
+- **Son Personnel**: CRUD son personnel y compris mots de passe (filtrer par nom)
+- **Ses Formations**: CRUD ses formations (filtrer par nom)
+- **Ses Actifs**: CRUD ses actifs (filtrer par nom)
+- **Ses Salles**: CRUD ses salles (filtrer par nom)
+
+### AGAD (Agent Administratif)
+- **Son Profil**: Modifier infos personnelles
+- **Ses Formations**: CRUD les formations de son établissement (filtrer par nom)
+- **Ses Actifs**: CRUD les actifs de son établissement (filtrer par nom)
+- **Ses Salles**: CRUD les salles de son établissement (filtrer par nom)
+
+### FRMT (Formateur)
+- **Son Profil**: Modifier infos personnelles
+
+## Stack Technologique
+
+- **Framework**: Laravel 12
+- **Frontend**: React + Inertia
+- **Auth**: Laravel Sanctum
+- **Database**: MySQL
+- **State**: React Query (via Inertia)
+
+## Prérequis
+
+- PHP 8.2+
+- MySQL 8.0+
+- Node.js 20+
+
+## Installation
+
+```bash
+# Installer les dépendances
+composer install
+npm install
+
+# Configurer l'environnement
+cp .env.example .env
+# Modifier .env avec les identifiants de base de données
+
+# Générer la clé
+php artisan key:generate
+
+# Exécuter les migrations
+php artisan migrate
+
+# Peuppler la base de données
+php artisan db:seed
+
+# Démarrer le développement
+composer run dev
+```
+
+## CORS
+
+La configuration CORS sera ajoutée lorsque les domaines des applications satellites seront connus:
+
+```php
+// config/cors.php
+'allowed_origins' => [
+    'https://attestation.ofppt.ma',
+    'https://inventory.ofppt.ma',
+],
+```
+
+## Structure des Répertoires
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Api/          # Contrôleurs API REST
+│   │   └── Web/          # Contrôleurs Web (Inertia)
+│   ├── Middleware/
+│   └── Resources/        # Ressources JSON API
+├── Models/
+│   ├── Concerns/        # Traits (ForUserScope)
+│   └── *.php
+├── Policies/            # Politiques d'autorisation
+routes/
+├── api.php             # Routes API REST
+└── web.php            # Routes Web
+```

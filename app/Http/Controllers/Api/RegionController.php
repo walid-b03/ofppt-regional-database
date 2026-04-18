@@ -21,7 +21,7 @@ class RegionController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Region $region)
+    public function show(Region $region)
     {
         $this->authorize('view', $region);
 

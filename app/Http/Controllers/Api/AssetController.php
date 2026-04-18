@@ -22,7 +22,7 @@ class AssetController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Asset $asset)
+    public function show(Asset $asset)
     {
         $this->authorize('view', $asset);
 
