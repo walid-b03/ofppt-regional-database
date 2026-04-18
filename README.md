@@ -31,7 +31,7 @@ Système centralisé de gestion des entités régionales OFPPT. Fournit un table
 | `DRRG` | Directeur Régional | Sa Région |
 | `DRCX` | Directeur de Complexe | Son Complexe |
 | `DRPD` | Directeur Pédagogique | Son Établissement |
-| `AGAD` | Agent Administratif | Son Établissement (écriture: formations, biens, salles) |
+| `AGAD` | Agent Administratif | Son Établissement (écriture: formations, actifs, salles) |
 | `FRMT` | Formateur | Son Profil uniquement |
 
 ## Hiérarchie des Données
@@ -66,7 +66,7 @@ Tous les points de terminaison (sauf connexion) nécessitent une authentificatio
 |--------|---------------------|-------------|
 | POST | `/api/auth/login` | Connexion avec code/mot de passe |
 | POST | `/api/auth/logout` | Déconnexion (suppression du token) |
-| GET | `/api/user` | Obtenir l'utilisateur actuel |
+| GET | `/api/user` | Obtenir l'utilisateur authentifié |
 
 ### Lecture Seule (Hiérarchie)
 
@@ -78,8 +78,8 @@ Tous les points de terminaison (sauf connexion) nécessitent une authentificatio
 | GET | `/api/complexes/{complex}` | Obtenir un complexe |
 | GET | `/api/establishments` | Liste des établissements |
 | GET | `/api/establishments/{establishment}` | Obtenir un établissement |
-| GET | `/api/users` | Liste des utilisateurs |
-| GET | `/api/users/{user}` | Obtenir un utilisateur |
+| GET | `/api/users` | Liste du Personnel |
+| GET | `/api/users/{user}` | Obtenir un membre du Personnel |
 
 ### Lecture + Écriture (Opérationnel)
 
@@ -89,10 +89,10 @@ Tous les points de terminaison (sauf connexion) nécessitent une authentificatio
 | GET | `/api/trainings/{training}` | Obtenir une formation |
 | POST | `/api/trainings` | Créer une formation |
 | PUT | `/api/trainings/{training}` | Modifier une formation |
-| GET | `/api/assets` | Liste des biens |
-| GET | `/api/assets/{asset}` | Obtenir un bien |
-| POST | `/api/assets` | Créer un bien |
-| PUT | `/api/assets/{asset}` | Modifier un bien |
+| GET | `/api/assets` | Liste des actifs |
+| GET | `/api/assets/{asset}` | Obtenir un actif |
+| POST | `/api/assets` | Créer un actif |
+| PUT | `/api/assets/{asset}` | Modifier un actif |
 | GET | `/api/rooms` | Liste des salles |
 | GET | `/api/rooms/{room}` | Obtenir une salle |
 | POST | `/api/rooms` | Créer une salle |
@@ -137,11 +137,11 @@ curl -X POST https://api.ofppt.local/api/auth/login \
 | GET/POST | `/regions` | CRUD régions |
 | GET/POST | `/complexes` | CRUD complexes |
 | GET/POST | `/establishments` | CRUD établissements |
-| GET/POST | `/users` | CRUD utilisateurs |
+| GET/POST | `/users` | CRUD Personnel |
 | GET/POST | `/trainings` | CRUD formations |
-| GET/POST | `/assets` | CRUD biens |
+| GET/POST | `/assets` | CRUD actifs |
 | GET/POST | `/rooms` | CRUD salles |
-| GET/POST | `/profile` | Profil utilisateur |
+| GET/POST | `/profile` | Profil |
 
 ## Contrôle d'Accès Basé sur les Politiques
 
@@ -151,7 +151,7 @@ Chaque modèle possède une Politique correspondante qui enforce:
 - **DRRG**: Accès à sa région et en aval
 - **DRCX**: Accès à son complexe et en aval
 - **DRPD**: Accès à son établissement et en aval
-- **AGAD**: Lecture/écriture formations, biens, salles dans son établissement
+- **AGAD**: Lecture/écriture formations, actifs, salles dans son établissement
 - **FRMT**: Accès lecture seule au profil
 
 ### Comportement des Scopes
@@ -251,18 +251,6 @@ php artisan db:seed
 composer run dev
 ```
 
-## CORS
-
-La configuration CORS sera ajoutée lorsque les domaines des applications satellites seront connus:
-
-```php
-// config/cors.php
-'allowed_origins' => [
-    'https://attestation.ofppt.ma',
-    'https://inventory.ofppt.ma',
-],
-```
-
 ## Structure des Répertoires
 
 ```
@@ -281,3 +269,23 @@ routes/
 ├── api.php             # Routes API REST
 └── web.php            # Routes Web
 ```
+
+## Notes de Production
+
+Ce projet est un **MVP (Minimum Viable Product)**. Avant une mise en production, les éléments suivants doivent être implémentés :
+
+- Gestion des erreurs robuste
+- Tests unitaires et d'intégration
+- Rate limiting
+- Filtrage avancé
+- Pagination
+- Validation des entrées avancé
+- Logging et monitoring
+- Optimisation des performances avancé
+- Configuration de sécurité (CORS, HTTPS, etc.)
+
+## Transparence IA
+
+- **Développement artisanal** : Backend, décisions d'architecture.
+- **Développement assisté par LLM** : Frontend.
+
