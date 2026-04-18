@@ -14,12 +14,12 @@ class RoomPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return !$authUser->isFRMT();
+        return ! $authUser->isFRMT();
     }
 
     public function view(User $authUser, Room $room): bool
     {
-        return !$authUser->isFRMT() && ($authUser?->establishment_id === $room->establishment_id
+        return ! $authUser->isFRMT() && ($authUser?->establishment_id === $room->establishment_id
             || $authUser->headedComplex?->id === $room->establishment->complex_id
             || $authUser->headedRegion?->id === $room->establishment->complex->region_id
         );
@@ -33,16 +33,6 @@ class RoomPolicy
     public function update(User $authUser, Room $room): bool
     {
         return $this->view($authUser, $room);
-    }
-
-    public function delete(User $authUser, Room $room): bool
-    {
-        return $this->view($authUser, $room);
-    }
-
-    public function restore(User $authUser): bool
-    {
-        return $authUser->isAdmin();
     }
 
     public function forceDelete(User $authUser): bool

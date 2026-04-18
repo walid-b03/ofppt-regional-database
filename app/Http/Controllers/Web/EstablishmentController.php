@@ -26,7 +26,7 @@ class EstablishmentController extends Controller
         $this->authorize('create', Establishment::class);
 
         return Inertia::render('Establishments/Create', [
-            'availableHeads'     => User::where('role', 'DRPD')->whereDoesntHave('headedEstablishment')->get(),
+            'availableHeads' => User::where('role', 'DRPD')->whereDoesntHave('headedEstablishment')->get(),
             'availableComplexes' => Complex::forHead(auth()->user())->get(),
         ]);
     }
@@ -36,15 +36,15 @@ class EstablishmentController extends Controller
         $this->authorize('create', Establishment::class);
 
         Establishment::create($request->validate([
-            'code'          => ['required', 'string', 'max:255', 'unique:establishments,code'],
-            'name'          => ['required', 'string', 'max:255'],
-            'sector'        => ['nullable', 'string', 'max:255'],
-            'type'          => ['nullable', 'string', 'max:255'],
-            'email'         => ['nullable', 'email', 'max:255'],
-            'phone'         => ['nullable', 'string', 'max:255'],
-            'address'       => ['nullable', 'string', 'max:255'],
-            'complex_id'    => ['required', 'exists:complexes,id'],
-            'head_id'       => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
+            'code' => ['required', 'string', 'max:255', 'unique:establishments,code'],
+            'name' => ['required', 'string', 'max:255'],
+            'sector' => ['nullable', 'string', 'max:255'],
+            'type' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'complex_id' => ['required', 'exists:complexes,id'],
+            'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
         ]));
 
         return redirect()->action([EstablishmentController::class, 'index']);
@@ -67,15 +67,15 @@ class EstablishmentController extends Controller
         $this->authorize('update', $establishment);
 
         $availableHeads = User::where('role', 'DRPD')->where(
-            function($query) use ($establishment) {
+            function ($query) use ($establishment) {
                 $query->whereDoesntHave('headedEstablishment')->orWhere('id', $establishment->head_id);
             }
         )->get();
 
         return Inertia::render('Establishments/Edit', [
-            'availableHeads'   => $availableHeads,
+            'availableHeads' => $availableHeads,
             'availableComplexes' => Complex::forHead(auth()->user())->get(),
-            'establishment'    => $establishment->load([
+            'establishment' => $establishment->load([
                 'head:id,code,role,first_name,last_name,establishment_id',
                 'complex:id,code,name,head_id,region_id',
             ]),
@@ -87,15 +87,15 @@ class EstablishmentController extends Controller
         $this->authorize('update', $establishment);
 
         $establishment->update($request->validate([
-            'code'         => ['sometimes', 'required', 'string', 'max:255', Rule::unique('establishments')->ignore($establishment->id)],
-            'name'         => ['sometimes', 'required', 'string', 'max:255'],
-            'sector'       => ['nullable', 'string', 'max:255'],
-            'type'         => ['nullable', 'string', 'max:255'],
-            'email'        => ['nullable', 'email', 'max:255'],
-            'phone'        => ['nullable', 'string', 'max:255'],
-            'address'      => ['nullable', 'string', 'max:255'],
-            'complex_id'   => ['sometimes', 'required', 'exists:complexes,id'],
-            'head_id'      => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
+            'code' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('establishments')->ignore($establishment->id)],
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'sector' => ['nullable', 'string', 'max:255'],
+            'type' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'complex_id' => ['sometimes', 'required', 'exists:complexes,id'],
+            'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
         ]));
 
         return redirect()->action([EstablishmentController::class, 'index']);
@@ -103,9 +103,9 @@ class EstablishmentController extends Controller
 
     public function destroy(Establishment $establishment)
     {
-        $this->authorize('delete', $establishment);
+        $this->authorize('forceDelete', $establishment);
 
-        $establishment->delete();
+        $establishment->forceDelete();
 
         return back();
     }

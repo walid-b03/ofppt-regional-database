@@ -33,16 +33,6 @@ class UserPolicy
         return $this->view($authUser, $user);
     }
 
-    public function delete(User $authUser, User $user): bool
-    {
-        return $this->view($authUser, $user);
-    }
-
-    public function restore(User $authUser): bool
-    {
-        return $authUser->isAdmin();
-    }
-
     public function forceDelete(User $authUser): bool
     {
         return $authUser->isAdmin();

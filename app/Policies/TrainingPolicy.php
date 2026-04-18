@@ -14,12 +14,12 @@ class TrainingPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return !$authUser->isFRMT();
+        return ! $authUser->isFRMT();
     }
 
     public function view(User $authUser, Training $training): bool
     {
-        return !$authUser->isFRMT() && ($authUser?->establishment_id === $training->establishment_id
+        return ! $authUser->isFRMT() && ($authUser?->establishment_id === $training->establishment_id
             || $authUser->headedComplex?->id === $training->establishment->complex_id
             || $authUser->headedRegion?->id === $training->establishment->complex->region_id
         );
@@ -35,19 +35,8 @@ class TrainingPolicy
         return $this->view($authUser, $training);
     }
 
-    public function delete(User $authUser, Training $training): bool
-    {
-        return $this->view($authUser, $training);
-    }
-
-    public function restore(User $authUser): bool
-    {
-        return $authUser->isAdmin();
-    }
-
     public function forceDelete(User $authUser): bool
     {
         return $authUser->isAdmin();
     }
-
 }

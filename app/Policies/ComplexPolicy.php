@@ -33,16 +33,6 @@ class ComplexPolicy
         return $this->view($authUser, $complex);
     }
 
-    public function delete(User $authUser, Complex $complex): bool
-    {
-        return $this->view($authUser, $complex);
-    }
-
-    public function restore(User $authUser): bool
-    {
-        return $authUser->isAdmin();
-    }
-
     public function forceDelete(User $authUser): bool
     {
         return $authUser->isAdmin();

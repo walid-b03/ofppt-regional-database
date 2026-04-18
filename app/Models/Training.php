@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Concerns\ForUserScope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Training extends Model
 {
-    use SoftDeletes, ForUserScope;
+    use ForUserScope;
 
     protected $fillable = [
         'code',

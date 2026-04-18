@@ -32,16 +32,6 @@ class RegionPolicy
         return $this->view($authUser, $region);
     }
 
-    public function delete(User $authUser, Region $region): bool
-    {
-        return $this->view($authUser, $region);
-    }
-
-    public function restore(User $authUser): bool
-    {
-        return $authUser->isAdmin();
-    }
-
     public function forceDelete(User $authUser): bool
     {
         return $authUser->isAdmin();

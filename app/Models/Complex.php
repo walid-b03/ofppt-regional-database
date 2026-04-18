@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 class Complex extends Model
 {
-    use SoftDeletes;
     protected $fillable = [
         'code',
         'name',
@@ -40,7 +38,7 @@ class Complex extends Model
     {
         $eager = [
             'head:id,code,first_name,last_name,establishment_id',
-            'region:id,code,name,head_id'
+            'region:id,code,name,head_id',
         ];
 
         if ($user->isAdmin()) {

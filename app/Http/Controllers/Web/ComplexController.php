@@ -26,7 +26,7 @@ class ComplexController extends Controller
         $this->authorize('create', Complex::class);
 
         return Inertia::render('Complexes/Create', [
-            'availableHeads'   => User::where('role', 'DRCX')->whereDoesntHave('headedComplex')->get(),
+            'availableHeads' => User::where('role', 'DRCX')->whereDoesntHave('headedComplex')->get(),
             'availableRegions' => Region::forHead(auth()->user())->get(),
         ]);
     }
@@ -36,13 +36,13 @@ class ComplexController extends Controller
         $this->authorize('create', Complex::class);
 
         Complex::create($request->validate([
-            'code'      => ['required', 'string', 'max:255', 'unique:complexes,code'],
-            'name'      => ['required', 'string', 'max:255'],
-            'email'     => ['nullable', 'email', 'max:255'],
-            'phone'     => ['nullable', 'string', 'max:255'],
-            'city'      => ['nullable', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:255', 'unique:complexes,code'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:255'],
             'region_id' => ['required', 'exists:regions,id'],
-            'head_id'   => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
+            'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
         ]));
 
         return redirect()->action([ComplexController::class, 'index']);
@@ -55,7 +55,7 @@ class ComplexController extends Controller
         return Inertia::render('Complexes/Show', [
             'complex' => $complex->load([
                 'head:id,code,first_name,last_name,establishment_id',
-                'region:id,code,name,head_id'
+                'region:id,code,name,head_id',
             ]),
         ]);
     }
@@ -65,17 +65,17 @@ class ComplexController extends Controller
         $this->authorize('update', $complex);
 
         $availableHeads = User::where('role', 'DRCX')->where(
-            function($query) use ($complex) {
+            function ($query) use ($complex) {
                 $query->whereDoesntHave('headedComplex')->orWhere('id', $complex->head_id);
             }
         )->get();
 
         return Inertia::render('Complexes/Edit', [
-            'availableHeads'   => $availableHeads,
+            'availableHeads' => $availableHeads,
             'availableRegions' => Region::forHead(auth()->user())->get(),
-            'complex'          => $complex->load([
+            'complex' => $complex->load([
                 'head:id,code,first_name,last_name,establishment_id',
-                'region:id,code,name,head_id'
+                'region:id,code,name,head_id',
             ]),
         ]);
     }
@@ -85,13 +85,13 @@ class ComplexController extends Controller
         $this->authorize('update', $complex);
 
         $complex->update($request->validate([
-            'code'      => ['sometimes', 'required', 'string', 'max:255', Rule::unique('complexes')->ignore($complex->id)],
-            'name'      => ['sometimes', 'required', 'string', 'max:255'],
-            'email'     => ['nullable', 'email', 'max:255'],
-            'phone'     => ['nullable', 'string', 'max:255'],
-            'city'      => ['nullable', 'string', 'max:255'],
+            'code' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('complexes')->ignore($complex->id)],
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:255'],
             'region_id' => ['sometimes', 'required', 'exists:regions,id'],
-            'head_id'   => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
+            'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
         ]));
 
         return redirect()->action([ComplexController::class, 'index']);
@@ -99,9 +99,9 @@ class ComplexController extends Controller
 
     public function destroy(Complex $complex)
     {
-        $this->authorize('delete', $complex);
+        $this->authorize('forceDelete', $complex);
 
-        $complex->delete();
+        $complex->forceDelete();
 
         return back();
     }

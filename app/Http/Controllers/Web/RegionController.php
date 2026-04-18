@@ -34,10 +34,10 @@ class RegionController extends Controller
         $this->authorize('create', Region::class);
 
         Region::create($request->validate([
-            'code'    => ['required', 'string', 'max:255', 'unique:regions,code'],
-            'name'    => ['required', 'string', 'max:255'],
-            'email'   => ['nullable', 'email', 'max:255'],
-            'phone'   => ['nullable', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:255', 'unique:regions,code'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRRG')],
         ]));
 
@@ -58,13 +58,13 @@ class RegionController extends Controller
         $this->authorize('update', $region);
 
         $availableHeads = User::where('role', 'DRRG')->where(
-            function($query) use ($region) {
+            function ($query) use ($region) {
                 $query->whereDoesntHave('headedRegion')->orWhere('id', $region->head_id);
             }
         )->get();
 
         return Inertia::render('Regions/Edit', [
-            'region'         => $region->load(['head:id,code,first_name,last_name,establishment_id']),
+            'region' => $region->load(['head:id,code,first_name,last_name,establishment_id']),
             'availableHeads' => $availableHeads,
         ]);
     }
@@ -74,10 +74,10 @@ class RegionController extends Controller
         $this->authorize('update', $region);
 
         $region->update($request->validate([
-            'code'    => ['sometimes', 'required', 'string', 'max:255', Rule::unique('regions')->ignore($region->id)],
-            'name'    => ['sometimes', 'required', 'string', 'max:255'],
-            'email'   => ['nullable', 'email', 'max:255'],
-            'phone'   => ['nullable', 'string', 'max:255'],
+            'code' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('regions')->ignore($region->id)],
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRRG')],
         ]));
 
@@ -86,9 +86,9 @@ class RegionController extends Controller
 
     public function destroy(Region $region)
     {
-        $this->authorize('delete', $region);
+        $this->authorize('forceDelete', $region);
 
-        $region->delete();
+        $region->forceDelete();
 
         return back();
     }

@@ -14,12 +14,12 @@ class AssetPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return !$authUser->isFRMT();
+        return ! $authUser->isFRMT();
     }
 
     public function view(User $authUser, Asset $asset): bool
     {
-        return !$authUser->isFRMT() && ($authUser?->establishment_id === $asset->establishment_id
+        return ! $authUser->isFRMT() && ($authUser?->establishment_id === $asset->establishment_id
             || $authUser->headedComplex?->id === $asset->establishment->complex_id
             || $authUser->headedRegion?->id === $asset->establishment->complex->region_id
         );
@@ -35,19 +35,8 @@ class AssetPolicy
         return $this->view($authUser, $asset);
     }
 
-    public function delete(User $authUser, Asset $asset): bool
-    {
-        return $this->view($authUser, $asset);
-    }
-
-    public function restore(User $authUser): bool
-    {
-        return $authUser->isAdmin();
-    }
-
     public function forceDelete(User $authUser): bool
     {
         return $authUser->isAdmin();
     }
 }
-

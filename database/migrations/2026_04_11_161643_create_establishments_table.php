@@ -45,7 +45,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->foreignId('head_id')->nullable();
+            $table->foreignId('head_id')->nullable()->constrained();
             $table->foreignId('complex_id')->constrained();
             $table->timestamps();
             $table->softDeletes();

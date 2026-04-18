@@ -34,16 +34,6 @@ class EstablishmentPolicy
         return $this->view($authUser, $establishment);
     }
 
-    public function delete(User $authUser, Establishment $establishment): bool
-    {
-        return $this->view($authUser, $establishment);
-    }
-
-    public function restore(User $authUser): bool
-    {
-        return $authUser->isAdmin();
-    }
-
     public function forceDelete(User $authUser): bool
     {
         return $authUser->isAdmin();

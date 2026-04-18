@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 class Establishment extends Model
 {
-    use SoftDeletes;
     protected $fillable = [
         'code',
         'name',
@@ -66,7 +64,7 @@ class Establishment extends Model
         }
 
         if ($user->isDRRG()) {
-            return $query->with($eager)->whereHas('complex', function($q) use($user) {
+            return $query->with($eager)->whereHas('complex', function ($q) use ($user) {
                 $q->where('region_id', $user->headedRegion->id);
             });
         }
@@ -77,6 +75,10 @@ class Establishment extends Model
 
         if ($user->isDRPD()) {
             return $query->with($eager)->where('id', $user->headedEstablishment->id);
+        }
+
+        if ($user->isAGAD()) {
+            return $query->with($eager)->where('id', $user->establishment_id);
         }
 
         return $query->where('id', 0);
