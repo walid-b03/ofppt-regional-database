@@ -52,7 +52,7 @@ class TrainingController extends Controller
         $this->authorize('view', $training);
 
         return Inertia::render('Trainings/Show', [
-            'training' => $training,
+            'training' => $training->load(['establishment:id,code,name,head_id,complex_id']),
         ]);
     }
 
@@ -61,7 +61,7 @@ class TrainingController extends Controller
         $this->authorize('update', $training);
 
         return Inertia::render('Trainings/Edit', [
-            'training' => $training,
+            'training' => $training->load(['establishment:id,code,name,head_id,complex_id']),
             'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }

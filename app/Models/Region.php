@@ -31,12 +31,14 @@ class Region extends Model
     // Scopes
     public function scopeForHead($query, User $user)
     {
+        $eager = ['head:id,code,first_name,last_name,establishment_id'];
+
         if ($user->isAdmin()) {
-            return $query->with(['head', 'complexes']);
+            return $query->with($eager);
         }
 
         if ($user->isDRRG()) {
-            return $query->with(['head', 'complexes'])->where('id', $user->headedRegion->id);
+            return $query->with($eager)->where('id', $user->headedRegion->id);
         }
 
         return $query->where('id', 0);

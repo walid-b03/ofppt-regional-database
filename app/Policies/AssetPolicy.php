@@ -7,47 +7,47 @@ use App\Models\User;
 
 class AssetPolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $authUser): ?bool
     {
-        return $user->isAdmin() ?: null;
+        return $authUser->isAdmin() ?: null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(User $authUser): bool
     {
-        return !$user->isFRMT();
+        return !$authUser->isFRMT();
     }
 
-    public function view(User $user, Asset $asset): bool
+    public function view(User $authUser, Asset $asset): bool
     {
-        return !$user->isFRMT() && ($user?->establishment_id === $asset->establishment_id
-            || $user->headedComplex?->id === $asset->establishment->complex_id
-            || $user->headedRegion?->id === $asset->establishment->complex->region_id
+        return !$authUser->isFRMT() && ($authUser?->establishment_id === $asset->establishment_id
+            || $authUser->headedComplex?->id === $asset->establishment->complex_id
+            || $authUser->headedRegion?->id === $asset->establishment->complex->region_id
         );
     }
 
-    public function create(User $user): bool
+    public function create(User $authUser): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($authUser);
     }
 
-    public function update(User $user, Asset $asset): bool
+    public function update(User $authUser, Asset $asset): bool
     {
-        return $this->view($user, $asset);
+        return $this->view($authUser, $asset);
     }
 
-    public function delete(User $user, Asset $asset): bool
+    public function delete(User $authUser, Asset $asset): bool
     {
-        return $this->view($user, $asset);
+        return $this->view($authUser, $asset);
     }
 
-    public function restore(User $user): bool
+    public function restore(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 }
 

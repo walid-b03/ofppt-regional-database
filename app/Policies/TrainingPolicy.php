@@ -7,47 +7,47 @@ use App\Models\User;
 
 class TrainingPolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $authUser): ?bool
     {
-        return $user->isAdmin() ?: null;
+        return $authUser->isAdmin() ?: null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(User $authUser): bool
     {
-        return !$user->isFRMT();
+        return !$authUser->isFRMT();
     }
 
-    public function view(User $user, Training $training): bool
+    public function view(User $authUser, Training $training): bool
     {
-        return !$user->isFRMT() && ($user?->establishment_id === $training->establishment_id
-            || $user->headedComplex?->id === $training->establishment->complex_id
-            || $user->headedRegion?->id === $training->establishment->complex->region_id
+        return !$authUser->isFRMT() && ($authUser?->establishment_id === $training->establishment_id
+            || $authUser->headedComplex?->id === $training->establishment->complex_id
+            || $authUser->headedRegion?->id === $training->establishment->complex->region_id
         );
     }
 
-    public function create(User $user): bool
+    public function create(User $authUser): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($authUser);
     }
 
-    public function update(User $user, Training $training): bool
+    public function update(User $authUser, Training $training): bool
     {
-        return $this->view($user, $training);
+        return $this->view($authUser, $training);
     }
 
-    public function delete(User $user, Training $training): bool
+    public function delete(User $authUser, Training $training): bool
     {
-        return $this->view($user, $training);
+        return $this->view($authUser, $training);
     }
 
-    public function restore(User $user): bool
+    public function restore(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 
 }

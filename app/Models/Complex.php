@@ -38,16 +38,21 @@ class Complex extends Model
     // Scopes
     public function scopeForHead($query, User $user)
     {
+        $eager = [
+            'head:id,code,first_name,last_name,establishment_id',
+            'region:id,code,name,head_id'
+        ];
+
         if ($user->isAdmin()) {
-            return $query->with(['region', 'head', 'establishments']);
+            return $query->with($eager);
         }
 
         if ($user->isDRRG()) {
-            return $query->with(['region', 'head', 'establishments'])->where('region_id', $user->headedRegion->id);
+            return $query->with($eager)->where('region_id', $user->headedRegion->id);
         }
 
         if ($user->isDRCX()) {
-            return $query->with(['region', 'head', 'establishments'])->where('id', $user->headedComplex->id);
+            return $query->with($eager)->where('id', $user->headedComplex->id);
         }
 
         return $query->where('id', 0);

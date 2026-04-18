@@ -55,7 +55,10 @@ class EstablishmentController extends Controller
         $this->authorize('view', $establishment);
 
         return Inertia::render('Establishments/Show', [
-            'establishment' => $establishment,
+            'establishment' => $establishment->load([
+                'head:id,code,role,first_name,last_name,establishment_id',
+                'complex:id,code,name,head_id,region_id',
+            ]),
         ]);
     }
 
@@ -70,9 +73,12 @@ class EstablishmentController extends Controller
         )->get();
 
         return Inertia::render('Establishments/Edit', [
-            'establishment'    => $establishment,
             'availableHeads'   => $availableHeads,
             'availableComplexes' => Complex::forHead(auth()->user())->get(),
+            'establishment'    => $establishment->load([
+                'head:id,code,role,first_name,last_name,establishment_id',
+                'complex:id,code,name,head_id,region_id',
+            ]),
         ]);
     }
 

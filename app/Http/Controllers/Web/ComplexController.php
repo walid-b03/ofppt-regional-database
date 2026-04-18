@@ -53,7 +53,10 @@ class ComplexController extends Controller
         $this->authorize('view', $complex);
 
         return Inertia::render('Complexes/Show', [
-            'complex' => $complex,
+            'complex' => $complex->load([
+                'head:id,code,first_name,last_name,establishment_id',
+                'region:id,code,name,head_id'
+            ]),
         ]);
     }
 
@@ -68,9 +71,12 @@ class ComplexController extends Controller
         )->get();
 
         return Inertia::render('Complexes/Edit', [
-            'complex'          => $complex,
             'availableHeads'   => $availableHeads,
             'availableRegions' => Region::forHead(auth()->user())->get(),
+            'complex'          => $complex->load([
+                'head:id,code,first_name,last_name,establishment_id',
+                'region:id,code,name,head_id'
+            ]),
         ]);
     }
 

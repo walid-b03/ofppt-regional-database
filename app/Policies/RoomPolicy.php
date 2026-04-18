@@ -7,46 +7,46 @@ use App\Models\User;
 
 class RoomPolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $authUser): ?bool
     {
-        return $user->isAdmin() ?: null;
+        return $authUser->isAdmin() ?: null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(User $authUser): bool
     {
-        return !$user->isFRMT();
+        return !$authUser->isFRMT();
     }
 
-    public function view(User $user, Room $room): bool
+    public function view(User $authUser, Room $room): bool
     {
-        return !$user->isFRMT() && ($user?->establishment_id === $room->establishment_id
-            || $user->headedComplex?->id === $room->establishment->complex_id
-            || $user->headedRegion?->id === $room->establishment->complex->region_id
+        return !$authUser->isFRMT() && ($authUser?->establishment_id === $room->establishment_id
+            || $authUser->headedComplex?->id === $room->establishment->complex_id
+            || $authUser->headedRegion?->id === $room->establishment->complex->region_id
         );
     }
 
-    public function create(User $user): bool
+    public function create(User $authUser): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($authUser);
     }
 
-    public function update(User $user, Room $room): bool
+    public function update(User $authUser, Room $room): bool
     {
-        return $this->view($user, $room);
+        return $this->view($authUser, $room);
     }
 
-    public function delete(User $user, Room $room): bool
+    public function delete(User $authUser, Room $room): bool
     {
-        return $this->view($user, $room);
+        return $this->view($authUser, $room);
     }
 
-    public function restore(User $user): bool
+    public function restore(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 }

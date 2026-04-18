@@ -7,44 +7,44 @@ use App\Models\User;
 
 class ComplexPolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $authUser): ?bool
     {
-        return $user->isAdmin() ?: null;
+        return $authUser->isAdmin() ?: null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(User $authUser): bool
     {
-        return $user->isDRCX() || $user->isDRRG();
+        return $authUser->isDRCX() || $authUser->isDRRG();
     }
 
-    public function view(User $user, Complex $complex): bool
+    public function view(User $authUser, Complex $complex): bool
     {
-        return $user->headedComplex?->id === $complex->id
-            || $user->headedRegion?->id === $complex->region_id;
+        return $authUser->headedComplex?->id === $complex->id
+            || $authUser->headedRegion?->id === $complex->region_id;
     }
 
-    public function create(User $user): bool
+    public function create(User $authUser): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($authUser);
     }
 
-    public function update(User $user, Complex $complex): bool
+    public function update(User $authUser, Complex $complex): bool
     {
-        return $this->view($user, $complex);
+        return $this->view($authUser, $complex);
     }
 
-    public function delete(User $user, Complex $complex): bool
+    public function delete(User $authUser, Complex $complex): bool
     {
-        return $this->view($user, $complex);
+        return $this->view($authUser, $complex);
     }
 
-    public function restore(User $user): bool
+    public function restore(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 }

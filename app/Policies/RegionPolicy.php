@@ -7,43 +7,43 @@ use App\Models\User;
 
 class RegionPolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $authUser): ?bool
     {
-        return $user->isAdmin() ?: null;
+        return $authUser->isAdmin() ?: null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(User $authUser): bool
     {
-        return $user->isDRRG();
+        return $authUser->isDRRG();
     }
 
-    public function view(User $user, Region $region): bool
+    public function view(User $authUser, Region $region): bool
     {
-        return $user->headedRegion?->id === $region->id;
+        return $authUser->headedRegion?->id === $region->id;
     }
 
-    public function create(User $user): bool
+    public function create(User $authUser): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($authUser);
     }
 
-    public function update(User $user, Region $region): bool
+    public function update(User $authUser, Region $region): bool
     {
-        return $this->view($user, $region);
+        return $this->view($authUser, $region);
     }
 
-    public function delete(User $user, Region $region): bool
+    public function delete(User $authUser, Region $region): bool
     {
-        return $this->view($user, $region);
+        return $this->view($authUser, $region);
     }
 
-    public function restore(User $user): bool
+    public function restore(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $authUser): bool
     {
-        return $user->isAdmin();
+        return $authUser->isAdmin();
     }
 }

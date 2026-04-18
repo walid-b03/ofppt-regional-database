@@ -48,7 +48,7 @@ class RoomController extends Controller
         $this->authorize('view', $room);
 
         return Inertia::render('Rooms/Show', [
-            'room' => $room,
+            'room' => $room->load(['establishment:id,code,name,head_id,complex_id']),
         ]);
     }
 
@@ -57,7 +57,7 @@ class RoomController extends Controller
         $this->authorize('update', $room);
 
         return Inertia::render('Rooms/Edit', [
-            'room' => $room,
+            'room' => $room->load(['establishment:id,code,name,head_id,complex_id']),
             'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }

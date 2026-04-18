@@ -6,26 +6,31 @@ use App\Models\User;
 
 trait ForUserScope
 {
-    public function scopeForUser($query, User $user)
+    public function scopeForUser($query, User $authUser)
     {
-        if ($user->isAdmin()) {
-            return $query->with(['establishment.complex.region']);
+        $eager = [
+            'establishment:id,code,name,head_id,complex_id',
+            'establishment.complex:id,head_id,region_id'
+        ];
+
+        if ($authUser->isAdmin()) {
+            return $query->with($eager);
         }
 
-        if ($user->isDRRG()) {
-            return $query->with(['establishment.complex.region'])->whereHas('establishment.complex', function($q) use($user) {
-                $q->where('region_id', $user->headedRegion->id);
+        if ($authUser->isDRRG()) {
+            return $query->with($eager)->whereHas('establishment.complex', function($q) use($authUser) {
+                $q->where('region_id', $authUser->headedRegion->id);
             });
         }
 
-        if ($user->isDRCX()) {
-            return $query->with(['establishment.complex.region'])->whereHas('establishment', function($q) use($user) {
-                $q->where('complex_id', $user->headedComplex->id);
+        if ($authUser->isDRCX()) {
+            return $query->with($eager)->whereHas('establishment', function($q) use($authUser) {
+                $q->where('complex_id', $authUser->headedComplex->id);
             });
         }
 
-        if ($user->isDRPD() || $user->isAGAD()) {
-            return $query->with(['establishment.complex.region'])->where('establishment_id', $user->establishment_id);
+        if ($authUser->isDRPD() || $authUser->isAGAD()) {
+            return $query->with($eager)->where('establishment_id', $authUser->establishment_id);
         }
 
         return $query->where('id', 0);

@@ -66,7 +66,12 @@ class UserController extends Controller
         $this->authorize('view', $user);
 
         return Inertia::render('Users/Show', [
-            'user' => $user,
+            'user' => $user->load([
+                'establishment:id,code,name,head_id,complex_id',
+                'headedEstablishment:id,code,name,head_id,complex_id',
+                'headedComplex:id,code,name,head_id,region_id',
+                'headedRegion:id,code,name,head_id',
+            ]),
         ]);
     }
 
@@ -75,9 +80,14 @@ class UserController extends Controller
         $this->authorize('update', $user);
 
         return Inertia::render('Users/Edit', [
-            'user'                    => $user,
             'availableRoles'          => auth()->user()->availableRoles(),
             'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
+            'user'                    => $user->load([
+                'establishment:id,code,name,head_id,complex_id',
+                'headedEstablishment:id,code,name,head_id,complex_id',
+                'headedComplex:id,code,name,head_id,region_id',
+                'headedRegion:id,code,name,head_id',
+            ]),
         ]);
     }
 

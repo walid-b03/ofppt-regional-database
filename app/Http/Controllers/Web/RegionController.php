@@ -49,7 +49,7 @@ class RegionController extends Controller
         $this->authorize('view', $region);
 
         return Inertia::render('Regions/Show', [
-            'region' => $region,
+            'region' => $region->load(['head:id,code,first_name,last_name,establishment_id']),
         ]);
     }
 
@@ -64,7 +64,7 @@ class RegionController extends Controller
         )->get();
 
         return Inertia::render('Regions/Edit', [
-            'region'         => $region,
+            'region'         => $region->load(['head:id,code,first_name,last_name,establishment_id']),
             'availableHeads' => $availableHeads,
         ]);
     }

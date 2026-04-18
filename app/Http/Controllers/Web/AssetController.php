@@ -51,7 +51,7 @@ class AssetController extends Controller
         $this->authorize('view', $asset);
 
         return Inertia::render('Assets/Show', [
-            'asset' => $asset,
+            'asset' => $asset->load(['establishment:id,code,name,head_id,complex_id']),
         ]);
     }
 
@@ -60,7 +60,7 @@ class AssetController extends Controller
         $this->authorize('update', $asset);
 
         return Inertia::render('Assets/Edit', [
-            'asset' => $asset,
+            'asset' => $asset->load(['establishment:id,code,name,head_id,complex_id']),
             'availableEstablishments' => Establishment::forHead(auth()->user())->get(),
         ]);
     }

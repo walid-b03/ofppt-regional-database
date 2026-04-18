@@ -132,26 +132,34 @@ class User extends Authenticatable
     // Scopes
     public function scopeForSuperior($query, User $user)
     {
+        $eager = [
+            'establishment:id,code,name,head_id,complex_id',
+            'establishment.complex:id,head_id,region_id',
+            'headedEstablishment:id,code,name,head_id,complex_id',
+            'headedComplex:id,code,name,head_id,region_id',
+            'headedRegion:id,code,name,head_id',
+        ];
+
         if ($user->isAdmin()) {
-            return $query->with('establishment.complex.region');
+            return $query->with($eager);
         }
 
         if ($user->isDRRG()) {
-            return $query->with('establishment.complex.region')->whereHas('establishment.complex', function($q) use($user) {
+            return $query->with($eager)->whereHas('establishment.complex', function($q) use($user) {
                 $q->where('region_id', $user->headedRegion->id);
             });
         }
 
         if ($user->isDRCX()) {
-            return $query->with('establishment.complex.region')->whereHas('establishment', function($q) use($user) {
+            return $query->with($eager)->whereHas('establishment', function($q) use($user) {
                 $q->where('complex_id', $user->headedComplex->id);
             });
         }
 
         if ($user->isDRPD()) {
-            return $query->with('establishment.complex.region')->where('establishment_id', $user->headedEstablishment->id);
+            return $query->with($eager)->where('establishment_id', $user->headedEstablishment->id);
         }
 
-        return $query->where('id', $user->id);
+        return $query->with($eager)->where('id', $user->id);
     }
 }
