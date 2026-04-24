@@ -18,8 +18,8 @@ class EstablishmentResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'address' => $this->address,
-            'complex' => $this->whenLoaded('complex', fn () => new ComplexResource($this->complex)),
-            'head' => $this->whenLoaded('head', fn () => new UserResource($this->head)),
+            'head_id' => $this->head_id,
+            'complex_id' => $this->complex_id,
         ];
     }
 }

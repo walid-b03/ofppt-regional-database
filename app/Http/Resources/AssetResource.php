@@ -17,7 +17,7 @@ class AssetResource extends JsonResource
             'state' => $this->state,
             'description' => $this->description,
             'notes' => $this->notes,
-            'establishment' => $this->whenLoaded('establishment', fn () => new EstablishmentResource($this->establishment)),
+            'establishment_id' => $this->establishment_id,
         ];
     }
 }

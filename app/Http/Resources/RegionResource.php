@@ -15,9 +15,7 @@ class RegionResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
-            'head' => $this->whenLoaded('head', fn () => new UserResource($this->head)),
-            'complexes_count' => $this->whenCounted('complexes'),
-            'complexes' => $this->whenLoaded('complexes', fn () => ComplexResource::collection($this->complexes)),
+            'head_id' => $this->head_id,
         ];
     }
 }

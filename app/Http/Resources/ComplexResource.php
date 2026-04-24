@@ -16,10 +16,8 @@ class ComplexResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'city' => $this->city,
-            'region' => $this->whenLoaded('region', fn () => new RegionResource($this->region)),
-            'head' => $this->whenLoaded('head', fn () => new UserResource($this->head)),
-            'establishments_count' => $this->whenCounted('establishments'),
-            'establishments' => $this->whenLoaded('establishments', fn () => EstablishmentResource::collection($this->establishments)),
+            'head_id' => $this->head_id,
+            'region_id' => $this->region_id,
         ];
     }
 }

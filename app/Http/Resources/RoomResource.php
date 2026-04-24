@@ -14,7 +14,7 @@ class RoomResource extends JsonResource
             'code' => $this->code,
             'name' => $this->name,
             'type' => $this->type,
-            'establishment' => $this->whenLoaded('establishment', fn () => new EstablishmentResource($this->establishment)),
+            'establishment_id' => $this->establishment_id,
         ];
     }
 }

@@ -18,7 +18,7 @@ class TrainingResource extends JsonResource
             'is_trunk' => $this->is_trunk,
             'duration' => $this->duration,
             'description' => $this->description,
-            'establishment' => $this->whenLoaded('establishment', fn () => new EstablishmentResource($this->establishment)),
+            'establishment_id' => $this->establishment_id,
         ];
     }
 }

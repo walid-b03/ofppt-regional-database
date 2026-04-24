@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Events\DataSyncEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Establishment;
 use App\Models\User;
@@ -36,7 +37,7 @@ class UserController extends Controller
     {
         $this->authorize('create', User::class);
 
-        User::create($request->validate([
+        $user = User::create($request->validate([
             'code' => ['required', 'string', 'max:255', 'unique:users,code'],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -48,6 +49,7 @@ class UserController extends Controller
             'address' => ['nullable', 'string', 'max:255'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'date_of_recruitment' => ['nullable', 'date', 'before_or_equal:today'],
+            'site_of_recruitment' => ['nullable', 'string', 'max:255'],
             'diploma' => ['nullable', 'string', 'max:255'],
             'rank' => ['nullable', 'in:A1,A2,A3'],
             'role' => ['required', Rule::in(auth()->user()->availableRoles())],
@@ -57,6 +59,8 @@ class UserController extends Controller
                 'exists:establishments,id',
             ],
         ]));
+
+        DataSyncEvent::dispatch($user, 'created');
 
         return redirect()->action([UserController::class, 'index']);
     }
@@ -107,6 +111,7 @@ class UserController extends Controller
             'address' => ['nullable', 'string', 'max:255'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'date_of_recruitment' => ['nullable', 'date', 'before_or_equal:today'],
+            'site_of_recruitment' => ['nullable', 'string', 'max:255'],
             'diploma' => ['nullable', 'string', 'max:255'],
             'rank' => ['nullable', 'in:A1,A2,A3'],
             'role' => ['sometimes', 'required', Rule::in(auth()->user()->availableRoles())],
@@ -117,6 +122,8 @@ class UserController extends Controller
             ],
         ]));
 
+        DataSyncEvent::dispatch($user, 'updated');
+
         return redirect()->action([UserController::class, 'index']);
     }
 
@@ -125,6 +132,8 @@ class UserController extends Controller
         $this->authorize('forceDelete', $user);
 
         $user->forceDelete();
+
+        DataSyncEvent::dispatch($user, 'deleted');
 
         return back();
     }
@@ -150,6 +159,8 @@ class UserController extends Controller
         }
 
         $user->update($request->validate($rules));
+
+        DataSyncEvent::dispatch($user, 'updated');
 
         return back();
     }

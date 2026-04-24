@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Events\DataSyncEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Region;
 use App\Models\User;
@@ -33,13 +34,15 @@ class RegionController extends Controller
     {
         $this->authorize('create', Region::class);
 
-        Region::create($request->validate([
+        $region = Region::create($request->validate([
             'code' => ['required', 'string', 'max:255', 'unique:regions,code'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRRG')],
         ]));
+
+        DataSyncEvent::dispatch($region, 'created');
 
         return redirect()->action([RegionController::class, 'index']);
     }
@@ -81,6 +84,8 @@ class RegionController extends Controller
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRRG')],
         ]));
 
+        DataSyncEvent::dispatch($region, 'updated');
+
         return redirect()->action([RegionController::class, 'index']);
     }
 
@@ -89,6 +94,8 @@ class RegionController extends Controller
         $this->authorize('forceDelete', $region);
 
         $region->forceDelete();
+
+        DataSyncEvent::dispatch($region, 'deleted');
 
         return back();
     }

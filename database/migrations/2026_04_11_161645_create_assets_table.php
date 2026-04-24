@@ -16,9 +16,8 @@ return new class extends Migration
             $table->enum('state', ['Actif', 'Inactif', 'Endommagé', 'Perdu'])->nullable();
             $table->text('description')->nullable();
             $table->text('notes')->nullable();
-            $table->foreignId('establishment_id')->constrained();
+            $table->foreignId('establishment_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Events\DataSyncEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Complex;
 use App\Models\Region;
@@ -35,7 +36,7 @@ class ComplexController extends Controller
     {
         $this->authorize('create', Complex::class);
 
-        Complex::create($request->validate([
+        $complex = Complex::create($request->validate([
             'code' => ['required', 'string', 'max:255', 'unique:complexes,code'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
@@ -44,6 +45,8 @@ class ComplexController extends Controller
             'region_id' => ['required', 'exists:regions,id'],
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
         ]));
+
+        DataSyncEvent::dispatch($complex, 'created');
 
         return redirect()->action([ComplexController::class, 'index']);
     }
@@ -94,6 +97,8 @@ class ComplexController extends Controller
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRCX')],
         ]));
 
+        DataSyncEvent::dispatch($complex, 'updated');
+
         return redirect()->action([ComplexController::class, 'index']);
     }
 
@@ -102,6 +107,8 @@ class ComplexController extends Controller
         $this->authorize('forceDelete', $complex);
 
         $complex->forceDelete();
+
+        DataSyncEvent::dispatch($complex, 'deleted');
 
         return back();
     }

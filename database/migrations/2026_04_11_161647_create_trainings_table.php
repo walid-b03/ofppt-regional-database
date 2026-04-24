@@ -17,9 +17,8 @@ return new class extends Migration
             $table->boolean('is_trunk')->nullable();
             $table->unsignedInteger('duration')->nullable(); // in months
             $table->text('description')->nullable();
-            $table->foreignId('establishment_id')->constrained();
+            $table->foreignId('establishment_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

@@ -15,10 +15,9 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->string('city')->nullable();
-            $table->foreignId('head_id')->nullable()->constrained();
-            $table->foreignId('region_id')->constrained();
+            $table->foreignId('head_id')->nullable();
+            $table->foreignId('region_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'address',
         'date_of_birth',
         'date_of_recruitment',
+        'site_of_recruitment',
         'diploma',
         'rank',
         'role',

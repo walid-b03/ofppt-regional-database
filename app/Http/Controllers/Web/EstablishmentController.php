@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Events\DataSyncEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Complex;
 use App\Models\Establishment;
@@ -35,7 +36,7 @@ class EstablishmentController extends Controller
     {
         $this->authorize('create', Establishment::class);
 
-        Establishment::create($request->validate([
+        $establishment = Establishment::create($request->validate([
             'code' => ['required', 'string', 'max:255', 'unique:establishments,code'],
             'name' => ['required', 'string', 'max:255'],
             'sector' => ['nullable', 'string', 'max:255'],
@@ -46,6 +47,8 @@ class EstablishmentController extends Controller
             'complex_id' => ['required', 'exists:complexes,id'],
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
         ]));
+
+        DataSyncEvent::dispatch($establishment, 'created');
 
         return redirect()->action([EstablishmentController::class, 'index']);
     }
@@ -98,6 +101,8 @@ class EstablishmentController extends Controller
             'head_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'DRPD')],
         ]));
 
+        DataSyncEvent::dispatch($establishment, 'updated');
+
         return redirect()->action([EstablishmentController::class, 'index']);
     }
 
@@ -106,6 +111,8 @@ class EstablishmentController extends Controller
         $this->authorize('forceDelete', $establishment);
 
         $establishment->forceDelete();
+
+        DataSyncEvent::dispatch($establishment, 'deleted');
 
         return back();
     }

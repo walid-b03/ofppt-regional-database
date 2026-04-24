@@ -23,6 +23,7 @@ export default function Edit({ user, availableEstablishments, availableRoles }) 
         address: user.address ?? "",
         date_of_birth: user.date_of_birth ?? "",
         date_of_recruitment: user.date_of_recruitment ?? "",
+        site_of_recruitment: user.site_of_recruitment ?? "",
         diploma: user.diploma ?? "",
         rank: user.rank ?? "",
         role_label: user.role_label ?? "",
@@ -43,6 +44,7 @@ export default function Edit({ user, availableEstablishments, availableRoles }) 
             { name: "phone", label: LABEL_MAP.phone || "Téléphone", value: data.phone, error: errors.phone, onChange: setData },
             { name: "date_of_birth", label: LABEL_MAP.date_of_birth || "Date de naissance", value: data.date_of_birth, error: errors.date_of_birth, onChange: setData, type: "date" },
             { name: "date_of_recruitment", label: LABEL_MAP.date_of_recruitment || "Date de recrutement", value: data.date_of_recruitment, error: errors.date_of_recruitment, onChange: setData, type: "date" },
+            { name: "site_of_recruitment", label: LABEL_MAP.site_of_recruitment || "Site de recrutement", value: data.site_of_recruitment, error: errors.site_of_recruitment, onChange: setData },
             { name: "diploma", label: LABEL_MAP.diploma || "Diplôme", value: data.diploma, error: errors.diploma, onChange: setData },
             { name: "rank", label: LABEL_MAP.rank || "Grade", value: data.rank, error: errors.rank, onChange: setData, options: RANK_OPTIONS },
         ]
@@ -56,6 +58,7 @@ export default function Edit({ user, availableEstablishments, availableRoles }) 
             { name: "phone", label: LABEL_MAP.phone || "Téléphone", value: data.phone, error: errors.phone, onChange: setData },
             { name: "date_of_birth", label: LABEL_MAP.date_of_birth || "Date de naissance", value: data.date_of_birth, error: errors.date_of_birth, onChange: setData, type: "date" },
             { name: "date_of_recruitment", label: LABEL_MAP.date_of_recruitment || "Date de recrutement", value: data.date_of_recruitment, error: errors.date_of_recruitment, onChange: setData, type: "date" },
+            { name: "site_of_recruitment", label: LABEL_MAP.site_of_recruitment || "Site de recrutement", value: data.site_of_recruitment, error: errors.site_of_recruitment, onChange: setData },
             { name: "diploma", label: LABEL_MAP.diploma || "Diplôme", value: data.diploma, error: errors.diploma, onChange: setData },
             { name: "rank", label: LABEL_MAP.rank || "Grade", value: data.rank, error: errors.rank, onChange: setData, options: RANK_OPTIONS },
         ];

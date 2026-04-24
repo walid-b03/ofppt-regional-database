@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\{
     RoomController,
 };
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
  * Public
@@ -54,4 +55,21 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('rooms/{room}', [RoomController::class, 'show'])->name('rooms.show');
     Route::post('rooms', [RoomController::class, 'store'])->name('rooms.store');
     Route::put('rooms/{room}', [RoomController::class, 'update'])->name('rooms.update');
+});
+
+Route::middleware('verify-shared-secret')->get('/sync/{type}', function (Request $request, $type) {
+    $request->validate(['updated_since' => 'required|date']);
+
+    $modelClass = match ($type) {
+        'users' => \App\Models\User::class,
+        'regions' => \App\Models\Region::class,
+        'complexes' => \App\Models\Complex::class,
+        'establishments' => \App\Models\Establishment::class,
+        'trainings' => \App\Models\Training::class,
+        'assets' => \App\Models\Asset::class,
+        'rooms' => \App\Models\Room::class,
+        default => abort(404),
+    };
+
+    return $modelClass::where('updated_at', '>=', $request->updated_since)->get()->makeVisible('password');
 });

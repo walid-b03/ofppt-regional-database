@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'satellite' => [
+        'shared_secret' => env('SHARED_SECRET'),
+        'gest_attest_url' => env('GEST_ATTEST_URL'),
+    ],
+
 ];

@@ -17,7 +17,7 @@ export const ICON_MAP = {
     first_name: User, last_name: User, cin: Hash,
     marital_status: Heart, children: Users, email: Mail,
     phone: Phone, address: MapPin, date_of_birth: Calendar,
-    date_of_recruitment: Briefcase, diploma: Award, rank: Award,
+    date_of_recruitment: Briefcase, site_of_recruitment: MapPin, diploma: Award, rank: Award,
     role_label: Briefcase,
 };
 
@@ -26,7 +26,7 @@ export const LABEL_MAP = {
     marital_status: 'État civil', children: 'Nombre d\'enfants',
     email: 'Email', phone: 'Téléphone', address: 'Adresse',
     date_of_birth: 'Date de naissance', date_of_recruitment: 'Date de recrutement',
-    diploma: 'Diplôme', rank: 'Grade', role_label: 'Fonction', role: 'Rôle',
+    site_of_recruitment: 'Site de recrutement', diploma: 'Diplôme', rank: 'Grade', role_label: 'Fonction', role: 'Rôle',
 };
 
 export function formatDate(val) {
