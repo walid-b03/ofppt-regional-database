@@ -38,7 +38,7 @@ export default function Create({ availableHeads }) {
                         error: errors.head_id,
                         onChange: setData,
                         options: availableHeads
-                            .filter(u => !u.headed_region)
+                            .filter(u => !u.headedRegion)
                             .map(u => ({ value: u.id, label: `${u.first_name} ${u.last_name} (${u.code})` })),
                     },
                     { name: 'email', label: 'Email', type: 'email', value: data.email, error: errors.email, onChange: setData },

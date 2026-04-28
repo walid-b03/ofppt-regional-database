@@ -44,7 +44,7 @@ class RegionController extends Controller
 
         DataSyncEvent::dispatch($region, 'created');
 
-        return redirect()->action([RegionController::class, 'index']);
+        return redirect()->route('regions.index');
     }
 
     public function show(Region $region)
@@ -86,7 +86,7 @@ class RegionController extends Controller
 
         DataSyncEvent::dispatch($region, 'updated');
 
-        return redirect()->action([RegionController::class, 'index']);
+        return redirect()->route('regions.index');
     }
 
     public function destroy(Region $region)

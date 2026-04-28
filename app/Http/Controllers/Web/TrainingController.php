@@ -44,7 +44,7 @@ class TrainingController extends Controller
             'establishment_id' => ['required', 'exists:establishments,id'],
         ]));
 
-        return redirect()->action([TrainingController::class, 'index']);
+        return redirect()->route('trainings.index');
     }
 
     public function show(Training $training)
@@ -81,14 +81,14 @@ class TrainingController extends Controller
             'establishment_id' => ['sometimes', 'required', 'exists:establishments,id'],
         ]));
 
-        return redirect()->action([TrainingController::class, 'index']);
+        return redirect()->route('trainings.index');
     }
 
     public function destroy(Training $training)
     {
-        $this->authorize('delete', $training);
+        $this->authorize('forceDelete', $training);
 
-        $training->delete();
+        $training->forceDelete();
 
         return back();
     }

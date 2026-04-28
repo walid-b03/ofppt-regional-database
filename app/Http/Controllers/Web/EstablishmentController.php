@@ -50,7 +50,7 @@ class EstablishmentController extends Controller
 
         DataSyncEvent::dispatch($establishment, 'created');
 
-        return redirect()->action([EstablishmentController::class, 'index']);
+        return redirect()->route('establishments.index');
     }
 
     public function show(Establishment $establishment)
@@ -103,7 +103,7 @@ class EstablishmentController extends Controller
 
         DataSyncEvent::dispatch($establishment, 'updated');
 
-        return redirect()->action([EstablishmentController::class, 'index']);
+        return redirect()->route('establishments.index');
     }
 
     public function destroy(Establishment $establishment)

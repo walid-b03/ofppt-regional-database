@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Complex;
+use App\Models\Establishment;
+use App\Models\Region;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('users')->truncate();
+        User::truncate();
         DB::table('establishments')->truncate();
         DB::table('complexes')->truncate();
         DB::table('regions')->truncate();
@@ -52,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'updated_at'    => now(),
         ]);
 
-        $drrgId = DB::table('users')->insertGetId([
+        $drrg = User::create([
             'code'                  => 'DRRG002',
             'first_name'            => 'Hassan',
             'last_name'             => 'Belkadi',
@@ -68,14 +72,11 @@ class DatabaseSeeder extends Seeder
             'diploma'               => 'Doctorat en Gestion',
             'rank'                  => 'A1',
             'role'                  => 'DRRG',
-            'role_label'            => 'Directeur Régional',
-            'password'              => password_hash('password', PASSWORD_BCRYPT),
+            'password'              => 'password',
             'establishment_id'      => $establishmentId,
-            'created_at'            => now(),
-            'updated_at'            => now(),
         ]);
 
-        $drcxId = DB::table('users')->insertGetId([
+        $drcx = User::create([
             'code'                  => 'DRCX002',
             'first_name'            => 'Khadija',
             'last_name'             => 'Fikri',
@@ -91,14 +92,11 @@ class DatabaseSeeder extends Seeder
             'diploma'               => 'Master en Management',
             'rank'                  => 'A1',
             'role'                  => 'DRCX',
-            'role_label'            => 'Directeur de Complexe',
-            'password'              => password_hash('password', PASSWORD_BCRYPT),
+            'password'              => 'password',
             'establishment_id'      => $establishmentId,
-            'created_at'            => now(),
-            'updated_at'            => now(),
         ]);
 
-        $drpdId = DB::table('users')->insertGetId([
+        $drpd = User::create([
             'code'                  => 'DRPD002',
             'first_name'            => 'Younes',
             'last_name'             => 'Amghar',
@@ -114,14 +112,11 @@ class DatabaseSeeder extends Seeder
             'diploma'               => 'Master en Sciences de l\'Éducation',
             'rank'                  => 'A2',
             'role'                  => 'DRPD',
-            'role_label'            => 'Directeur Pédagogique',
-            'password'              => password_hash('password', PASSWORD_BCRYPT),
+            'password'              => 'password',
             'establishment_id'      => $establishmentId,
-            'created_at'            => now(),
-            'updated_at'            => now(),
         ]);
 
-        $agadId = DB::table('users')->insertGetId([
+        $agad = User::create([
             'code'                  => 'AGAD002',
             'first_name'            => 'Mounia',
             'last_name'             => 'Srhir',
@@ -137,14 +132,11 @@ class DatabaseSeeder extends Seeder
             'diploma'               => 'Licence en Administration',
             'rank'                  => 'A3',
             'role'                  => 'AGAD',
-            'role_label'            => 'Agent Administratif',
-            'password'              => password_hash('password', PASSWORD_BCRYPT),
+            'password'              => 'password',
             'establishment_id'      => $establishmentId,
-            'created_at'            => now(),
-            'updated_at'            => now(),
         ]);
 
-        $frmtId = DB::table('users')->insertGetId([
+        $frmt = User::create([
             'code'                  => 'FRMT002',
             'first_name'            => 'Abdelali',
             'last_name'             => 'Ouahbi',
@@ -160,14 +152,11 @@ class DatabaseSeeder extends Seeder
             'diploma'               => 'Master en Génie Logiciel',
             'rank'                  => 'A2',
             'role'                  => 'FRMT',
-            'role_label'            => 'Formateur',
-            'password'              => password_hash('password', PASSWORD_BCRYPT),
+            'password'              => 'password',
             'establishment_id'      => $establishmentId,
-            'created_at'            => now(),
-            'updated_at'            => now(),
         ]);
 
-        DB::table('users')->insert([
+        User::create([
             'code'                  => 'admin',
             'first_name'            => 'Administrateur',
             'last_name'             => 'Système',
@@ -175,16 +164,13 @@ class DatabaseSeeder extends Seeder
             'email'                 => 'admin@ofppt.ma',
             'phone'                 => '+212 6 00 00 00 00',
             'role'                  => 'admin',
-            'role_label'            => 'Administrateur',
-            'password'              => password_hash('admin', PASSWORD_BCRYPT),
+            'password'              => 'admin',
             'establishment_id'      => null,
-            'created_at'            => now(),
-            'updated_at'            => now(),
         ]);
 
-        DB::table('regions')->where('id', $regionId)->update(['head_id' => $drrgId]);
-        DB::table('complexes')->where('id', $complexId)->update(['head_id' => $drcxId]);
-        DB::table('establishments')->where('id', $establishmentId)->update(['head_id' => $drpdId]);
+        DB::table('regions')->where('id', $regionId)->update(['head_id' => $drrg->id]);
+        DB::table('complexes')->where('id', $complexId)->update(['head_id' => $drcx->id]);
+        DB::table('establishments')->where('id', $establishmentId)->update(['head_id' => $drpd->id]);
 
         $this->command->info('Seeded: 1 region (Béni Mellal-Khénifra), 1 complex (CFP1), 1 establishment (ISTA NTIC Beni Mellal), 5 users (DRRG, DRCX, DRPD, AGAD, FRMT) + admin');
     }

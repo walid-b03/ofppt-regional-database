@@ -43,7 +43,7 @@ class AssetController extends Controller
             'establishment_id' => ['required', 'exists:establishments,id'],
         ]));
 
-        return redirect()->action([AssetController::class, 'index']);
+        return redirect()->route('assets.index');
     }
 
     public function show(Asset $asset)
@@ -79,14 +79,14 @@ class AssetController extends Controller
             'establishment_id' => ['sometimes', 'required', 'exists:establishments,id'],
         ]));
 
-        return redirect()->action([AssetController::class, 'index']);
+        return redirect()->route('assets.index');
     }
 
     public function destroy(Asset $asset)
     {
-        $this->authorize('delete', $asset);
+        $this->authorize('forceDelete', $asset);
 
-        $asset->delete();
+        $asset->forceDelete();
 
         return back();
     }

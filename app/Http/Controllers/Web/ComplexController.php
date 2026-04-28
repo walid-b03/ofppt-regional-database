@@ -48,7 +48,7 @@ class ComplexController extends Controller
 
         DataSyncEvent::dispatch($complex, 'created');
 
-        return redirect()->action([ComplexController::class, 'index']);
+        return redirect()->route('complexes.index');
     }
 
     public function show(Complex $complex)
@@ -99,7 +99,7 @@ class ComplexController extends Controller
 
         DataSyncEvent::dispatch($complex, 'updated');
 
-        return redirect()->action([ComplexController::class, 'index']);
+        return redirect()->route('complexes.index');
     }
 
     public function destroy(Complex $complex)

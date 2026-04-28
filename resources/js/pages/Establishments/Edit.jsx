@@ -61,7 +61,7 @@ export default function Edit({ establishment, availableComplexes, availableHeads
                         error: errors.head_id,
                         onChange: setData,
                         options: availableHeads
-                            .filter(u => !u.headed_establishment || u.id === establishment.head_id)
+                            .filter(u => !u.headedEstablishment || u.id === establishment.head_id)
                             .map(u => ({ value: u.id, label: `${u.first_name} ${u.last_name} (${u.code})` })),
                     },
                     { name: 'sector', label: 'Secteur', value: data.sector, error: errors.sector, onChange: setData, options: SECTOR_OPTIONS },

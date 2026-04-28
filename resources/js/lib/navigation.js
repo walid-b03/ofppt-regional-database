@@ -14,7 +14,7 @@ export function getNavItems(role, user) {
             { label: 'Salles',         icon: DoorOpen,   href: '/rooms' },
         ],
         DRRG: [
-            { label: 'Ma Région',        icon: Map,        href: `/regions/${user?.headed_region?.id ?? ''}` },
+            { label: 'Ma Région',        icon: Map,        href: `/regions/${user?.headedRegion?.id ?? ''}` },
             { label: 'Mes Complexes',    icon: School,     href: '/complexes' },
             { label: 'Mes Établissements', icon: Building2, href: '/establishments' },
             { label: 'Mon Personnel',  icon: Users,      href: '/users' },
@@ -23,7 +23,7 @@ export function getNavItems(role, user) {
             { label: 'Mes Salles',       icon: DoorOpen,   href: '/rooms' },
         ],
         DRCX: [
-            { label: 'Mon Complexe',     icon: School,     href: `/complexes/${user?.headed_complex?.id ?? ''}` },
+            { label: 'Mon Complexe',     icon: School,     href: `/complexes/${user?.headedComplex?.id ?? ''}` },
             { label: 'Mes Établissements', icon: Building2, href: '/establishments' },
             { label: 'Mon Personnel',  icon: Users,      href: '/users' },
             { label: 'Mes Formations',   icon: GraduationCap, href: '/trainings' },
@@ -31,7 +31,7 @@ export function getNavItems(role, user) {
             { label: 'Mes Salles',       icon: DoorOpen,   href: '/rooms' },
         ],
         DRPD: [
-            { label: 'Mon Établissement', icon: Building2, href: `/establishments/${user?.headed_establishment?.id ?? ''}` },
+            { label: 'Mon Établissement', icon: Building2, href: `/establishments/${user?.headedEstablishment?.id ?? ''}` },
             { label: 'Mon Personnel',  icon: Users,      href: '/users' },
             { label: 'Mes Formations',   icon: GraduationCap, href: '/trainings' },
             { label: 'Mes Actifs',       icon: Package,    href: '/assets' },

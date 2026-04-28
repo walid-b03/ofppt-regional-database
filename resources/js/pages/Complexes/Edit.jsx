@@ -60,7 +60,7 @@ export default function Edit({ complex, availableRegions, availableHeads }) {
                         error: errors.head_id,
                         onChange: setData,
                         options: availableHeads
-                            .filter(u => !u.headed_complex || u.id === complex.head_id)
+                            .filter(u => !u.headedComplex || u.id === complex.head_id)
                             .map(u => ({ value: u.id, label: `${u.first_name} ${u.last_name} (${u.code})` })),
                     },
                     { name: 'email', label: 'Email', type: 'email', value: data.email, error: errors.email, onChange: setData },

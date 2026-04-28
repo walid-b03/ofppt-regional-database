@@ -62,7 +62,7 @@ class UserController extends Controller
 
         DataSyncEvent::dispatch($user, 'created');
 
-        return redirect()->action([UserController::class, 'index']);
+        return redirect()->route('users.index');
     }
 
     public function show(User $user)
@@ -124,7 +124,7 @@ class UserController extends Controller
 
         DataSyncEvent::dispatch($user, 'updated');
 
-        return redirect()->action([UserController::class, 'index']);
+        return redirect()->route('users.index');
     }
 
     public function destroy(User $user)
@@ -162,6 +162,6 @@ class UserController extends Controller
 
         DataSyncEvent::dispatch($user, 'updated');
 
-        return back();
+        return redirect()->route('users.index');
     }
 }

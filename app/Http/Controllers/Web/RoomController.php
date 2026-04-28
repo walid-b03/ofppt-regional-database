@@ -40,7 +40,7 @@ class RoomController extends Controller
             'establishment_id' => ['required', 'exists:establishments,id'],
         ]));
 
-        return redirect()->action([RoomController::class, 'index']);
+        return redirect()->route('rooms.index');
     }
 
     public function show(Room $room)
@@ -73,14 +73,14 @@ class RoomController extends Controller
             'establishment_id' => ['sometimes', 'required', 'exists:establishments,id'],
         ]));
 
-        return redirect()->action([RoomController::class, 'index']);
+        return redirect()->route('rooms.index');
     }
 
     public function destroy(Room $room)
     {
-        $this->authorize('delete', $room);
+        $this->authorize('forceDelete', $room);
 
-        $room->delete();
+        $room->forceDelete();
 
         return back();
     }

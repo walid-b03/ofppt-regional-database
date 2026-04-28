@@ -43,7 +43,7 @@ class ProfileController extends Controller
             'role_label'          => ['sometimes', 'nullable', 'string', 'max:255'],
         ]));
 
-        return back();
+        return redirect()->route('profile.show');
     }
 
     public function updatePassword(Request $request)
@@ -63,6 +63,6 @@ class ProfileController extends Controller
             'password' => $validated['password'],
         ]);
 
-        return back();
+        return redirect()->route('profile.show');
     }
 }
