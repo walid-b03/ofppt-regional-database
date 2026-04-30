@@ -106,10 +106,10 @@ class ComplexController extends Controller
     {
         $this->authorize('forceDelete', $complex);
 
-        $complex->forceDelete();
-
         DataSyncEvent::dispatch($complex, 'deleted');
 
-        return back();
+        $complex->forceDelete();
+
+        return redirect()->route('complexes.index');
     }
 }

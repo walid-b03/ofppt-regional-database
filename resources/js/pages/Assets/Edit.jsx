@@ -1,4 +1,4 @@
-import { Head, useForm, router, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 import { ASSET_STATE_OPTIONS } from '../../lib/constants';
@@ -20,12 +20,6 @@ export default function Edit({ asset, availableEstablishments }) {
         put(`/assets/${asset.id}`);
     }
 
-    function handleDelete() {
-        router.delete(`/assets/${asset.id}`, {
-            onSuccess: () => router.visit('/assets'),
-        });
-    }
-
     return (
         <Dashboard title={`Modifier — ${asset.name}`}>
             <Head title={`Modifier ${asset.name} — OFPPT`} />
@@ -38,8 +32,7 @@ export default function Edit({ asset, availableEstablishments }) {
                 isCreate={false}
                 entity={asset}
                 entityLabel="Actif"
-                onDelete={user.role === 'admin' ? handleDelete : undefined}
-                showDelete={user.role === 'admin'}
+                deleteUrl={user.role === 'admin' ? `/assets/${asset.id}` : undefined}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },

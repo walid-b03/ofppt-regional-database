@@ -1,4 +1,4 @@
-import { Head, useForm, router, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 import { REGION_OPTIONS } from '../../lib/constants';
@@ -19,12 +19,6 @@ export default function Edit({ region, availableHeads }) {
         put(`/regions/${region.id}`);
     }
 
-    function handleDelete() {
-        router.delete(`/regions/${region.id}`, {
-            onSuccess: () => router.visit('/regions'),
-        });
-    }
-
     return (
         <Dashboard title={`Modifier — ${region.name}`}>
             <Head title={`Modifier ${region.name} — OFPPT`} />
@@ -37,10 +31,9 @@ export default function Edit({ region, availableHeads }) {
                 isCreate={false}
                 entity={region}
                 entityLabel="Région"
-                onDelete={user.role === 'admin' ? handleDelete : undefined}
-                showDelete={user.role === 'admin'}
+                deleteUrl={user.role === 'admin' ? `/regions/${region.id}` : undefined}
                 deleteZoneTitle="Zone dangereuse"
-                deleteZoneDescription="La suppression de cette région entrâinera la suppression de tous les complexes et établissements associés."
+                deleteZoneDescription="Cette action est irréversible."
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData, options: REGION_OPTIONS },

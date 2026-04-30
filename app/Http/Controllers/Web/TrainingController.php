@@ -90,6 +90,6 @@ class TrainingController extends Controller
 
         $training->forceDelete();
 
-        return back();
+        return redirect()->route('trainings.index');
     }
 }

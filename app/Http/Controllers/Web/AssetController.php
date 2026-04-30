@@ -88,6 +88,6 @@ class AssetController extends Controller
 
         $asset->forceDelete();
 
-        return back();
+        return redirect()->route('assets.index');
     }
 }

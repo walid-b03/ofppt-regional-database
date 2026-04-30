@@ -131,11 +131,11 @@ class UserController extends Controller
     {
         $this->authorize('forceDelete', $user);
 
-        $user->forceDelete();
-
         DataSyncEvent::dispatch($user, 'deleted');
 
-        return back();
+        $user->forceDelete();
+
+        return redirect()->route('users.index');
     }
 
     public function updatePassword(Request $request, User $user)

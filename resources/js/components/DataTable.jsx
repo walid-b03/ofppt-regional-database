@@ -13,6 +13,8 @@ export default function DataTable({
     emptyMessage = 'Aucune donnée disponible',
     searchKeys,
 }) {
+    const records = data || [];
+
     const [search, setSearch] = useState('');
     const [filterValues, setFilterValues] = useState(
         Object.fromEntries(filters.map(f => [f.key, '']))
@@ -20,7 +22,7 @@ export default function DataTable({
 
     const keysToSearch = searchKeys || columns.map(c => c.key);
 
-    const filtered = data.filter(row => {
+    const filtered = records.filter(row => {
         if (search) {
             const q = search.toLowerCase();
             const matchesSearch = keysToSearch.some(key => {
@@ -157,8 +159,10 @@ export default function DataTable({
 
                 {/* Result count */}
                 {filtered.length > 0 && (
-                    <div className="border-t border-stone-100 px-5 py-3 text-xs text-stone-400">
-                        {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
+                    <div className="flex items-center justify-end border-t border-stone-100 px-5 py-3">
+                        <span className="text-xs text-stone-400">
+                            {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
+                        </span>
                     </div>
                 )}
             </div>

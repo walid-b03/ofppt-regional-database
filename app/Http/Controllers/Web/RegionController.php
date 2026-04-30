@@ -93,10 +93,10 @@ class RegionController extends Controller
     {
         $this->authorize('forceDelete', $region);
 
-        $region->forceDelete();
-
         DataSyncEvent::dispatch($region, 'deleted');
 
-        return back();
+        $region->forceDelete();
+
+        return redirect()->route('regions.index');
     }
 }

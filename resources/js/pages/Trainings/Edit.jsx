@@ -1,4 +1,4 @@
-import { Head, useForm, router, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 import { TRAINING_TYPE_OPTIONS, TRAINING_LEVEL_OPTIONS } from '../../lib/constants';
@@ -21,12 +21,6 @@ export default function Edit({ training, availableEstablishments }) {
         put(`/trainings/${training.id}`);
     }
 
-    function handleDelete() {
-        router.delete(`/trainings/${training.id}`, {
-            onSuccess: () => router.visit('/trainings'),
-        });
-    }
-
     return (
         <Dashboard title={`Modifier — ${training.name}`}>
             <Head title={`Modifier ${training.name} — OFPPT`} />
@@ -39,8 +33,7 @@ export default function Edit({ training, availableEstablishments }) {
                 isCreate={false}
                 entity={training}
                 entityLabel="Formation"
-                onDelete={user.role === 'admin' ? handleDelete : undefined}
-                showDelete={user.role === 'admin'}
+                deleteUrl={user.role === 'admin' ? `/trainings/${training.id}` : undefined}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },

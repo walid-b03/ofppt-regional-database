@@ -36,7 +36,7 @@ export default function EntityFormCard({
     isCreate = false,
     entity,
     entityLabel = 'Entité',
-    onDelete,
+    deleteUrl,
     showDelete = true,
     deleteTitle,
     deleteZoneTitle = 'Zone dangereuse',
@@ -56,8 +56,8 @@ export default function EntityFormCard({
                 extra={extras}
                 isCreate={isCreate}
                 banner={buildBanner(entity, entityLabel)}
-                showDelete={!isCreate && showDelete && onDelete}
-                onDelete={onDelete}
+                showDelete={!isCreate && showDelete && deleteUrl}
+                deleteUrl={deleteUrl}
                 deleteTitle={deleteTitle || 'Supprimer'}
                 deleteZoneTitle={deleteZoneTitle}
                 deleteZoneDescription={deleteZoneDescription}

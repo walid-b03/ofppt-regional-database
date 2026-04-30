@@ -1,4 +1,4 @@
-import { Head, useForm, router, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 
@@ -16,12 +16,6 @@ export default function Edit({ room, availableEstablishments }) {
         put(`/rooms/${room.id}`);
     }
 
-    function handleDelete() {
-        router.delete(`/rooms/${room.id}`, {
-            onSuccess: () => router.visit('/rooms'),
-        });
-    }
-
     return (
         <Dashboard title={`Modifier — ${room.name}`}>
             <Head title={`Modifier ${room.name} — OFPPT`} />
@@ -34,8 +28,7 @@ export default function Edit({ room, availableEstablishments }) {
                 isCreate={false}
                 entity={room}
                 entityLabel="Salle"
-                onDelete={user.role === 'admin' ? handleDelete : undefined}
-                showDelete={user.role === 'admin'}
+                deleteUrl={user.role === 'admin' ? `/rooms/${room.id}` : undefined}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },

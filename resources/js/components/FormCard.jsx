@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Eye, EyeOff, Loader2, Trash2 } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import Modal from './Modal';
 
 function Field({
@@ -121,20 +121,12 @@ export default function FormCard({
     title, subtitle, cancelHref, onSubmit, processing,
     submitLabel = 'Enregistrer', fields = [], extraFields = [], extra,
     isCreate, banner,
-    showDelete, onDelete, deleteTitle,
+    showDelete, deleteUrl, deleteTitle,
     deleteZoneTitle = 'Zone dangereuse',
     deleteZoneDescription,
     deleteModalDescription,
 }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deleteProcessing, setDeleteProcessing] = useState(false);
-
-    const handleDelete = () => {
-        setDeleteProcessing(true);
-        onDelete?.();
-    };
-
-    const isProcessing = processing || deleteProcessing;
 
     return (
         <div>
@@ -195,7 +187,7 @@ export default function FormCard({
                 </form>
             </div>
 
-            {showDelete && onDelete && (
+            {showDelete && deleteUrl && (
                 <div className="mt-6 rounded-xl border border-red-200 bg-red-50/50 p-6">
                     <h3 className="text-sm font-semibold text-red-800">{deleteZoneTitle}</h3>
                     <p className="mt-1 text-xs text-red-600">
@@ -213,24 +205,23 @@ export default function FormCard({
 
             <Modal
                 open={showDeleteModal}
-                onClose={() => !isProcessing && setShowDeleteModal(false)}
+                onClose={() => setShowDeleteModal(false)}
                 title="Confirmer la suppression"
                 description={deleteModalDescription || 'Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.'}
                 footer={
                     <>
                         <button
-                            onClick={() => !isProcessing && setShowDeleteModal(false)}
-                            disabled={isProcessing}
-                            className="rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:bg-stone-50 disabled:opacity-60"
+                            onClick={() => setShowDeleteModal(false)}
+                            className="rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:bg-stone-50"
                         >
                             Annuler
                         </button>
                         <button
-                            onClick={handleDelete}
-                            disabled={isProcessing}
-                            className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition-all duration-200 hover:bg-red-700 disabled:pointer-events-none disabled:opacity-60"
+                            type="button"
+                            onClick={() => router.delete(deleteUrl)}
+                            className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition-all duration-200 hover:bg-red-700"
                         >
-                            {isProcessing ? 'Suppression...' : 'Supprimer'}
+                            Supprimer
                         </button>
                     </>
                 }

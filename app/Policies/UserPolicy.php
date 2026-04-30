@@ -33,8 +33,8 @@ class UserPolicy
         return $this->view($authUser, $user);
     }
 
-    public function forceDelete(User $authUser): bool
+    public function forceDelete(User $authUser, User $user): bool
     {
-        return $authUser->isAdmin();
+        return $authUser->isAdmin() && $authUser->id !== $user->id;
     }
 }

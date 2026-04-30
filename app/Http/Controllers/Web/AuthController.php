@@ -17,7 +17,7 @@ class AuthController extends Controller
 
         if (!auth()->attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors([
-                'code' => __('Les identifiants fournis sont incorrects.'),
+                'code' => 'Les identifiants fournis sont incorrects.',
             ]);
         }
 

@@ -110,10 +110,10 @@ class EstablishmentController extends Controller
     {
         $this->authorize('forceDelete', $establishment);
 
-        $establishment->forceDelete();
-
         DataSyncEvent::dispatch($establishment, 'deleted');
 
-        return back();
+        $establishment->forceDelete();
+
+        return redirect()->route('establishments.index');
     }
 }

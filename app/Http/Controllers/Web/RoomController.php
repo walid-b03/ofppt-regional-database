@@ -82,6 +82,6 @@ class RoomController extends Controller
 
         $room->forceDelete();
 
-        return back();
+        return redirect()->route('rooms.index');
     }
 }

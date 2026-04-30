@@ -1,4 +1,4 @@
-import { Head, useForm, router, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import Dashboard from "../../layout/Dashboard";
 import UserFormCard from "../../components/UserFormCard";
 import { MARITAL_OPTIONS, RANK_OPTIONS, ROLE_LABELS } from "../../lib/constants";
@@ -78,12 +78,6 @@ export default function Edit({ user, availableEstablishments, availableRoles }) 
         put(`/users/${user.id}`, { preserveScroll: true });
     }
 
-    function handleDelete() {
-        router.delete(`/users/${user.id}`, {
-            onSuccess: () => router.visit("/users"),
-        });
-    }
-
     return (
         <Dashboard title={`Modifier — ${user.first_name} ${user.last_name}`}>
             <Head title={`Modifier ${user.first_name} — OFPPT`} />
@@ -99,7 +93,7 @@ export default function Edit({ user, availableEstablishments, availableRoles }) 
                     showPassword={true}
                     user={user}
                     showDelete={canDelete}
-                    onDelete={handleDelete}
+                    deleteUrl={canDelete ? `/users/${user.id}` : undefined}
                     dangerZoneTitle="Zone dangereuse"
                     dangerZoneDescription="La suppression de ce membre du personnel est irréversible."
                 />

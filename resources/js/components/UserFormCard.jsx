@@ -39,10 +39,10 @@ export default function UserFormCard({
     showPassword = false,
     user,
     showDelete = false,
-    onDelete,
+    deleteUrl,
     deleteTitle,
     deleteZoneTitle = 'Zone dangereuse',
-    deleteZoneDescription = 'La suppression est irréversible.',
+    deleteZoneDescription = 'Cette action est irréversible.',
     deleteModalDescription,
     isCreate = false,
 }) {
@@ -80,7 +80,7 @@ export default function UserFormCard({
                 isCreate={isCreate}
                 banner={buildBanner(user)}
                 showDelete={showDelete && !isCreate}
-                onDelete={onDelete}
+                deleteUrl={deleteUrl}
                 deleteTitle={deleteTitle || 'Supprimer'}
                 deleteZoneTitle={deleteZoneTitle}
                 deleteZoneDescription={deleteZoneDescription}

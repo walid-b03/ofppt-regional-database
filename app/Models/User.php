@@ -147,17 +147,18 @@ class User extends Authenticatable
         if ($user->isDRRG()) {
             return $query->with($eager)->whereHas('establishment.complex', function ($q) use ($user) {
                 $q->where('region_id', $user->headedRegion->id);
-            });
+            })->whereIn('role', $user->availableRoles());
         }
 
         if ($user->isDRCX()) {
             return $query->with($eager)->whereHas('establishment', function ($q) use ($user) {
                 $q->where('complex_id', $user->headedComplex->id);
-            });
+            })->whereIn('role', $user->availableRoles());
         }
 
         if ($user->isDRPD()) {
-            return $query->with($eager)->where('establishment_id', $user->headedEstablishment->id);
+            return $query->with($eager)->where('establishment_id', $user->headedEstablishment->id)
+                ->whereIn('role', $user->availableRoles());
         }
 
         return $query->with($eager)->where('id', $user->id);

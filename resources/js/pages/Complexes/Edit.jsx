@@ -1,4 +1,4 @@
-import { Head, useForm, router, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 
@@ -20,12 +20,6 @@ export default function Edit({ complex, availableRegions, availableHeads }) {
         put(`/complexes/${complex.id}`);
     }
 
-    function handleDelete() {
-        router.delete(`/complexes/${complex.id}`, {
-            onSuccess: () => router.visit('/complexes'),
-        });
-    }
-
     return (
         <Dashboard title={`Modifier — ${complex.name}`}>
             <Head title={`Modifier ${complex.name} — OFPPT`} />
@@ -38,10 +32,9 @@ export default function Edit({ complex, availableRegions, availableHeads }) {
                 isCreate={false}
                 entity={complex}
                 entityLabel="Complexe"
-                onDelete={user.role === 'admin' ? handleDelete : undefined}
-                showDelete={user.role === 'admin'}
+                deleteUrl={user.role === 'admin' ? `/complexes/${complex.id}` : undefined}
                 deleteZoneTitle="Zone dangereuse"
-                deleteZoneDescription="La suppression de ce complexe entrâinera la suppression de tous les établissements associés."
+                deleteZoneDescription="Cette action est irréversible."
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },

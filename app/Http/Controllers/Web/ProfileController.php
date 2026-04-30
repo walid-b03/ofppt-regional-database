@@ -56,7 +56,9 @@ class ProfileController extends Controller
         ]);
 
         if (!Hash::check($validated['current_password'], $user->password)) {
-            abort(422, 'Le mot de passe actuel est incorrect.');
+            return back()->withErrors([
+                'current_password' => 'Le mot de passe actuel est incorrect.',
+            ]);
         }
 
         $user->update([

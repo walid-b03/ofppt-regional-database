@@ -1,4 +1,4 @@
-import { Head, useForm, router, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import Dashboard from '../../layout/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 import { SECTOR_OPTIONS, ESTABLISHMENT_TYPE_OPTIONS } from '../../lib/constants';
@@ -23,12 +23,6 @@ export default function Edit({ establishment, availableComplexes, availableHeads
         put(`/establishments/${establishment.id}`);
     }
 
-    function handleDelete() {
-        router.delete(`/establishments/${establishment.id}`, {
-            onSuccess: () => router.visit('/establishments'),
-        });
-    }
-
     return (
         <Dashboard title={`Modifier — ${establishment.name}`}>
             <Head title={`Modifier ${establishment.name} — OFPPT`} />
@@ -41,8 +35,7 @@ export default function Edit({ establishment, availableComplexes, availableHeads
                 isCreate={false}
                 entity={establishment}
                 entityLabel="Établissement"
-                onDelete={user.role === 'admin' ? handleDelete : undefined}
-                showDelete={user.role === 'admin'}
+                deleteUrl={user.role === 'admin' ? `/establishments/${establishment.id}` : undefined}
                 fields={[
                     { name: 'code', label: 'Code', value: data.code, error: errors.code, onChange: setData },
                     { name: 'name', label: 'Nom', value: data.name, error: errors.name, onChange: setData },
