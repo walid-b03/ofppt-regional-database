@@ -16,14 +16,7 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        User::truncate();
-        DB::table('establishments')->truncate();
-        DB::table('complexes')->truncate();
-        DB::table('regions')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-        $regionId = DB::table('regions')->insertGetId([
+       $regionId = DB::table('regions')->insertGetId([
             'code'          => 'BMKH',
             'name'          => 'Béni Mellal-Khénifra',
             'email'         => 'bmkh@ofppt.ma',
