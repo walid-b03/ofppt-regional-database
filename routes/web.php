@@ -18,7 +18,7 @@ use Inertia\Inertia;
  * Public
  */
 Route::get('/', fn () => Inertia::render('Home'))->name('home');
-Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login');
 
 /*
  * Private (All authenticated users)

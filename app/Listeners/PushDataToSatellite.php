@@ -28,7 +28,7 @@ private array $fillableMap = [
 
         $data = $model->only($this->fillableMap[$type] ?? []);
 
-        if ($type === 'user' && ($event->action === 'created' || $model->wasChanged('password'))) {
+        if ($type === 'user' && in_array($event->action, ['created', 'updated'], true)) {
             $data['password'] = $model->getRawOriginal('password');
         }
 

@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 /*
  * Public
  */
-Route::post('auth/login', [AuthController::class, 'login'])->name('api.login');
+Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('api.login');
 
 /*
  * Private

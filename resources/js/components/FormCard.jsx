@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, Loader2, Trash2 } from 'lucide-react';
+import { ChevronDown, Eye, EyeOff, Loader2, Trash2 } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import Modal from './Modal';
 
@@ -8,6 +8,7 @@ function Field({
     type = 'text', options, textarea, checkbox,
     placeholder = '...', rows = 3, className = '',
 }) {
+    const [showPassword, setShowPassword] = useState(false);
     const baseCls =
         'block w-full rounded-xl border bg-white py-2.5 text-sm shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 hover:border-stone-300';
     const borderCls = error
@@ -83,14 +84,34 @@ function Field({
             <label htmlFor={name} className="block text-sm font-medium text-stone-700">
                 {label}
             </label>
-            <input
-                id={name}
-                type={type}
-                value={value ?? ''}
-                onChange={e => onChange(name, e.target.value)}
-                placeholder={placeholder}
-                className={`${baseCls} ${borderCls} px-4`}
-            />
+            {type === 'password' ? (
+                <div className="group/input relative">
+                    <input
+                        id={name}
+                        type={showPassword ? 'text' : 'password'}
+                        value={value ?? ''}
+                        onChange={e => onChange(name, e.target.value)}
+                        placeholder={placeholder}
+                        className={`${baseCls} ${borderCls} px-4 pr-12`}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 transition-colors hover:text-indigo-600 focus:outline-none"
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                </div>
+            ) : (
+                <input
+                    id={name}
+                    type={type}
+                    value={value ?? ''}
+                    onChange={e => onChange(name, e.target.value)}
+                    placeholder={placeholder}
+                    className={`${baseCls} ${borderCls} px-4`}
+                />
+            )}
             {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
     );

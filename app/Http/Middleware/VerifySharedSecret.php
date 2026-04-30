@@ -14,8 +14,10 @@ class VerifySharedSecret
 
         if (!$sharedSecret) return response()->json(['error' => 'Missing signature'], 403);
 
-        if ($sharedSecret !== config('services.satellite.shared_secret')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $hmac = hash_hmac('sha256', $request->fullUrl(), config('services.satellite.shared_secret'));
+
+        if (!hash_equals($hmac, $sharedSecret)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         return $next($request);
