@@ -77,10 +77,10 @@ export default function UserInfoCard({ title, icon, badge, items, onEdit }) {
                           .map(([label, value]) => (
                               <div
                                   key={label}
-                                  className="flex items-center justify-between px-5 py-3"
+                                  className="flex items-start justify-between gap-4 px-5 py-3"
                               >
-                                  <span className="text-sm text-stone-500">{label}</span>
-                                  <span className="text-sm font-medium text-stone-800">
+                                  <span className="shrink-0 text-sm text-stone-500">{label}</span>
+                                  <span className="text-right text-sm font-medium leading-relaxed text-stone-800 break-words">
                                       {value}
                                   </span>
                               </div>
