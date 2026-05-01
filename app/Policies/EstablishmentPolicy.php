@@ -14,7 +14,7 @@ class EstablishmentPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return $authUser->isDRPD() || $authUser->isDRCX() || $authUser->isDRRG();
+        return $authUser->isAdmin() || $authUser->isDRRG() || $authUser->isDRCX();
     }
 
     public function view(User $authUser, Establishment $establishment): bool

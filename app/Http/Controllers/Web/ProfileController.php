@@ -39,7 +39,7 @@ class ProfileController extends Controller
             'date_of_birth'       => ['sometimes', 'nullable', 'date', 'before:today'],
             'date_of_recruitment' => ['sometimes', 'nullable', 'date', 'before_or_equal:today'],
             'diploma'             => ['sometimes', 'nullable', 'string', 'max:255'],
-            'rank'                => ['sometimes', 'nullable', 'in:A1,A2,A3'],
+            'rank'                => ['sometimes', 'nullable', 'in:A30,A29,A28,A27,A26,A25,A24,A23,A22,B21,B20,B19,C18,C17,C16,D15,D14,D13,E12,E11,E10,F09,F08,F07,G06,G05,G04,G03,G02,G01'],
             'role_label'          => ['sometimes', 'nullable', 'string', 'max:255'],
         ]));
 

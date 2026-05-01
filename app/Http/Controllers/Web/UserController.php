@@ -51,7 +51,7 @@ class UserController extends Controller
             'date_of_recruitment' => ['nullable', 'date', 'before_or_equal:today'],
             'site_of_recruitment' => ['nullable', 'string', 'max:255'],
             'diploma' => ['nullable', 'string', 'max:255'],
-            'rank' => ['nullable', 'in:A1,A2,A3'],
+            'rank' => ['nullable', 'in:A30,A29,A28,A27,A26,A25,A24,A23,A22,B21,B20,B19,C18,C17,C16,D15,D14,D13,E12,E11,E10,F09,F08,F07,G06,G05,G04,G03,G02,G01'],
             'role' => ['required', Rule::in(auth()->user()->availableRoles())],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'establishment_id' => [
@@ -113,7 +113,7 @@ class UserController extends Controller
             'date_of_recruitment' => ['nullable', 'date', 'before_or_equal:today'],
             'site_of_recruitment' => ['nullable', 'string', 'max:255'],
             'diploma' => ['nullable', 'string', 'max:255'],
-            'rank' => ['nullable', 'in:A1,A2,A3'],
+            'rank' => ['nullable', 'in:A30,A29,A28,A27,A26,A25,A24,A23,A22,B21,B20,B19,C18,C17,C16,D15,D14,D13,E12,E11,E10,F09,F08,F07,G06,G05,G04,G03,G02,G01'],
             'role' => ['sometimes', 'required', Rule::in(auth()->user()->availableRoles())],
             'establishment_id' => [
                 'sometimes',

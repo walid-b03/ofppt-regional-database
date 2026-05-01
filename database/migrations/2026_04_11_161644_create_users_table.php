@@ -23,7 +23,15 @@ return new class extends Migration
             $table->date('date_of_recruitment')->nullable();
             $table->string('site_of_recruitment')->nullable();
             $table->string('diploma')->nullable();
-            $table->enum('rank', ['A1', 'A2', 'A3'])->nullable();
+            $table->enum('rank', [
+                'A30', 'A29', 'A28', 'A27', 'A26', 'A25', 'A24', 'A23', 'A22',
+                'B21', 'B20', 'B19',
+                'C18', 'C17', 'C16',
+                'D15', 'D14', 'D13',
+                'E12', 'E11', 'E10',
+                'F09', 'F08', 'F07',
+                'G06', 'G05', 'G04', 'G03', 'G02', 'G01',
+            ])->nullable();
             $table->enum('role', ['admin', 'DRRG', 'DRCX', 'DRPD', 'AGAD', 'FRMT'])->nullable();
             $table->string('role_label')->nullable();
             $table->string('password');

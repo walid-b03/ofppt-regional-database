@@ -14,7 +14,7 @@ class ComplexPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return $authUser->isDRCX() || $authUser->isDRRG();
+        return $authUser->isAdmin() || $authUser->isDRRG();
     }
 
     public function view(User $authUser, Complex $complex): bool

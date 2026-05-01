@@ -14,7 +14,7 @@ class RegionPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return $authUser->isDRRG();
+        return $authUser->isAdmin();
     }
 
     public function view(User $authUser, Region $region): bool
