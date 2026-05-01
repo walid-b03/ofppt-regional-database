@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
        $regionId = DB::table('regions')->insertGetId([
             'code'          => 'BMKH',
             'name'          => 'Béni Mellal-Khénifra',
+            'email'         => 'exemple@email.com',
+            'phone'         => '0512345678',
             'created_at'    => now(),
             'updated_at'    => now(),
         ]);
@@ -26,6 +28,9 @@ class DatabaseSeeder extends Seeder
         $complexId = DB::table('complexes')->insertGetId([
             'code'          => 'CFP-BM2',
             'name'          => 'Complexe de Formation Professionnelle Béni Mellal 2',
+            'email'         => 'exemple@email.com',
+            'phone'         => '0512345678',
+            'city'          => 'Béni Mellal',
             'region_id'     => $regionId,
             'created_at'    => now(),
             'updated_at'    => now(),
@@ -34,6 +39,11 @@ class DatabaseSeeder extends Seeder
         DB::table('establishments')->insertGetId([
             'code'          => 'ISTANTIC-BM',
             'name'          => 'Institut Spécialisé de Technologie Appliquée NTIC Béni Mellal',
+            'sector'        => 'Digital et Intelligence Artificielle',
+            'type'          => 'Etablissement de Formation',
+            'email'         => 'exemple@email.com',
+            'phone'         => '0512345678',
+            'address'       => 'N8 Mghila, Béni Mellal 23000',
             'complex_id'    => $complexId,
             'created_at'    => now(),
             'updated_at'    => now(),
