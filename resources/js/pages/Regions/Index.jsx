@@ -13,13 +13,6 @@ export default function Index({ regions }) {
                     { key: 'code', label: 'Code' },
                     { key: 'name', label: 'Nom' },
                     {
-                        key: 'head',
-                        label: 'Responsable',
-                        render: r => r.head
-                            ? `${r.head.first_name} ${r.head.last_name}`
-                            : <span className="text-stone-400">—</span>,
-                    },
-                    {
                         key: 'email',
                         label: 'Email',
                         render: r => r.email || <span className="text-stone-400">—</span>,
@@ -28,6 +21,13 @@ export default function Index({ regions }) {
                         key: 'phone',
                         label: 'Téléphone',
                         render: r => r.phone || <span className="text-stone-400">—</span>,
+                    },
+                    {
+                        key: 'head',
+                        label: 'Responsable',
+                        render: r => r.head
+                        ? `${r.head.first_name} ${r.head.last_name}`
+                        : <span className="text-stone-400">—</span>,
                     },
                 ]}
                 createHref="/regions/create"
