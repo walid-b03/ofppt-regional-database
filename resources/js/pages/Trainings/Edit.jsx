@@ -1,5 +1,5 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
-import Dashboard from '../../layout/Dashboard';
+import Dashboard from '../../layouts/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 import { TRAINING_TYPE_OPTIONS, TRAINING_LEVEL_OPTIONS } from '../../lib/constants';
 

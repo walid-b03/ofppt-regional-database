@@ -1,5 +1,5 @@
 import { Head, usePage } from '@inertiajs/react';
-import Dashboard from '../../layout/Dashboard';
+import Dashboard from '../../layouts/Dashboard';
 import DataTable from '../../components/DataTable';
 import { ROLE_LABELS } from '../../lib/constants';
 

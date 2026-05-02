@@ -1,5 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
-import Dashboard from '../../layout/Dashboard';
+import Dashboard from '../../layouts/Dashboard';
 import EntityFormCard from '../../components/EntityFormCard';
 import { SECTOR_OPTIONS, ESTABLISHMENT_TYPE_OPTIONS } from '../../lib/constants';
 

@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import Dashboard from '../../layout/Dashboard';
+import Dashboard from '../../layouts/Dashboard';
 import UserInfoCard from '../../components/UserInfoCard';
 import { Pencil, DoorOpen, MapPin } from 'lucide-react';
 

@@ -1,5 +1,5 @@
 import { Head, useForm, usePage } from "@inertiajs/react";
-import Dashboard from "../../layout/Dashboard";
+import Dashboard from "../../layouts/Dashboard";
 import UserFormCard from "../../components/UserFormCard";
 import { MARITAL_OPTIONS, RANK_OPTIONS } from "../../lib/constants";
 import { LABEL_MAP } from "../../components/UserInfoCard";
