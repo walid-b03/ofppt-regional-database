@@ -2,6 +2,8 @@
 
 Système centralisé de gestion des entités régionales OFPPT. Fournit un tableau de bord web pour la gestion administrative et une API REST pour les applications satellites.
 
+Vous pouvez en savoir plus à ce sujet sur ce [blog](https://wbaya.dev/?cmd=cat&arg=blog%2F001_how_i_built_a_data_platform_during_internship_after_discovering_there_was_no_database.md)
+
 ## Architecture
 
 ```
