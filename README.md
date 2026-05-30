@@ -215,6 +215,19 @@ Chaque modèle possède une Politique correspondante qui enforce:
 ### FRMT (Formateur)
 - **Son Profil**: Modifier infos personnelles
 
+## Test Credentials
+
+Run `php artisan db:seed` to populate test data. Login with code (not email).
+
+| Code | Password | Role | Scope |
+|------|----------|------|-------|
+| `ADMIN01` | `ADMIN01` | Administrateur | Global CRUD |
+| `DRRG01` | `DRRG01` | Directeur Régional | Region BMKH |
+| `DRCX01` | `DRCX01` | Directeur de Complexe | Complex CFP-BM2 |
+| `DRPD01` | `DRPD01` | Directeur Pédagogique | Establishment ISTANTIC-BM |
+| `FRMT01` | `FRMT01` | Formateur | Profile only |
+| `AGAD01` | `AGAD01` | Agent Administratif | Establishment assets/rooms/trainings |
+
 ## Stack Technologique
 
 - **Framework**: Laravel 12
