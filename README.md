@@ -4,6 +4,19 @@ Système centralisé de gestion des entités régionales OFPPT. Fournit un table
 
 Vous pouvez en savoir plus à ce sujet sur ce [blog](https://wbaya.dev/?cmd=cat&arg=blog%2F001_how_i_built_a_data_platform_during_internship_after_discovering_there_was_no_database.md)
 
+## Identifiants de Test
+
+visitez [ofppt-regional-database](https://ofppt-regional-database-main-mjnfv7.free.laravel.cloud) pour tester
+
+| Code | Mot de passe | Rôle | Portée |
+|------|-------------|------|--------|
+| `ADMIN01` | `ADMIN01` | Administrateur | CRUD global |
+| `DRRG01` | `DRRG01` | Directeur Régional | Région BMKH |
+| `DRCX01` | `DRCX01` | Directeur de Complexe | Complexe CFP-BM2 |
+| `DRPD01` | `DRPD01` | Directeur Pédagogique | Établissement ISTANTIC-BM |
+| `FRMT01` | `FRMT01` | Formateur | Profil uniquement |
+| `AGAD01` | `AGAD01` | Agent Administratif | Actifs/salles/formations de l'établissement |
+
 ## Architecture
 
 ```
@@ -214,19 +227,6 @@ Chaque modèle possède une Politique correspondante qui enforce:
 
 ### FRMT (Formateur)
 - **Son Profil**: Modifier infos personnelles
-
-## Test Credentials
-
-Run `php artisan db:seed` to populate test data. Login with code (not email).
-
-| Code | Password | Role | Scope |
-|------|----------|------|-------|
-| `ADMIN01` | `ADMIN01` | Administrateur | Global CRUD |
-| `DRRG01` | `DRRG01` | Directeur Régional | Region BMKH |
-| `DRCX01` | `DRCX01` | Directeur de Complexe | Complex CFP-BM2 |
-| `DRPD01` | `DRPD01` | Directeur Pédagogique | Establishment ISTANTIC-BM |
-| `FRMT01` | `FRMT01` | Formateur | Profile only |
-| `AGAD01` | `AGAD01` | Agent Administratif | Establishment assets/rooms/trainings |
 
 ## Stack Technologique
 
