@@ -1,128 +1,128 @@
-# Base de Données Régionale OFPPT
+# OFPPT Regional Database
 
-Système centralisé de gestion des entités régionales OFPPT. Fournit un tableau de bord web pour la gestion administrative et une API REST pour les applications satellites.
+Centralized management system for OFPPT regional entities. Provides a web dashboard for administrative management and a REST API for satellite applications.
 
-Vous pouvez en savoir plus à ce sujet sur ce [blog](https://wbaya.dev/?cmd=cat&arg=blog%2F001_how_i_built_a_data_platform_during_internship_after_discovering_there_was_no_database.md)
+You can read more about it on this [blog post](https://wbaya.dev/?cmd=cat&arg=blog%2F001_how_i_built_a_data_platform_during_internship_after_discovering_there_was_no_database.md)
 
-## Identifiants de Test
+## Test Credentials
 
-visitez [ofppt-regional-database](https://ofppt-regional-database-main-mjnfv7.free.laravel.cloud) pour tester
+visit [ofppt-regional-database](https://ofppt-regional-database-main-mjnfv7.free.laravel.cloud) to test
 
-| Code | Mot de passe | Rôle | Portée |
-|------|-------------|------|--------|
-| `ADMIN01` | `ADMIN01` | Administrateur | CRUD global |
-| `DRRG01` | `DRRG01` | Directeur Régional | Région BMKH |
-| `DRCX01` | `DRCX01` | Directeur de Complexe | Complexe CFP-BM2 |
-| `DRPD01` | `DRPD01` | Directeur Pédagogique | Établissement ISTANTIC-BM |
-| `FRMT01` | `FRMT01` | Formateur | Profil uniquement |
-| `AGAD01` | `AGAD01` | Agent Administratif | Actifs/salles/formations de l'établissement |
+| Code | Password | Role | Scope |
+|------|----------|------|-------|
+| `ADMIN01` | `ADMIN01` | Administrator | Global CRUD |
+| `DRRG01` | `DRRG01` | Regional Director | BMKH Region |
+| `DRCX01` | `DRCX01` | Complex Director | CFP-BM2 Complex |
+| `DRPD01` | `DRPD01` | Pedagogical Director | ISTANTIC-BM Establishment |
+| `FRMT01` | `FRMT01` | Trainer | Profile only |
+| `AGAD01` | `AGAD01` | Administrative Agent | Establishment assets/rooms/trainings |
 
 ## Architecture
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│                         Ce Projet                         │
+│                        This Project                       │
 │                   (Laravel + Inertia)                     │
 ├───────────────────────────────────────────────────────────┤
-│  Tableau de bord (Inertia)  │    API REST (Sanctum)       │
-│  /routes/web.php            │    /routes/api.php          │
+│  Dashboard (Inertia)         │    REST API (Sanctum)      │
+│  /routes/web.php             │    /routes/api.php         │
 ├───────────────────────────────────────────────────────────┤
-│  Models / Policies / Scopes │    Controllers / Resources  │
+│  Models / Policies / Scopes  │    Controllers / Resources │
 └───────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌───────────────────────────────────────────────────────────┐
-│                   Applications Satellites                 │
-│  - Gestion des Attestations                               │
-│  - (futures applications...)                              │
+│                    Satellite Applications                 │
+│  - Attestation Management                                 │
+│  - (future applications...)                               │
 └───────────────────────────────────────────────────────────┘
 ```
 
-## Rôles du Personnel
+## Staff Roles
 
-| Rôle | Libellé | Portée d'Accès |
-|------|--------|---------------|
-| `admin` | Administrateur | Global (toutes les entités) |
-| `DRRG` | Directeur Régional | Sa Région |
-| `DRCX` | Directeur de Complexe | Son Complexe |
-| `DRPD` | Directeur Pédagogique | Son Établissement |
-| `AGAD` | Agent Administratif | Son Établissement (écriture: formations, actifs, salles) |
-| `FRMT` | Formateur | Son Profil uniquement |
+| Role | Label | Access Scope |
+|------|-------|-------------|
+| `admin` | Administrator | Global (all entities) |
+| `DRRG` | Regional Director | Their Region |
+| `DRCX` | Complex Director | Their Complex |
+| `DRPD` | Pedagogical Director | Their Establishment |
+| `AGAD` | Administrative Agent | Their Establishment (write: trainings, assets, rooms) |
+| `FRMT` | Trainer | Their Profile only |
 
-## Hiérarchie des Données
+## Data Hierarchy
 
 ```
-Région (DRRG)
-  └─ Complexe (DRCX)
-       └─ Établissement (DRPD, AGAD, FRMT)
-            ├─ Personnel
-            ├─ Formation
-            ├─ Actif
-            └─ Salle
+Region (DRRG)
+  └─ Complex (DRCX)
+       └─ Establishment (DRPD, AGAD, FRMT)
+            ├─ Staff
+            ├─ Training
+            ├─ Asset
+            └─ Room
 ```
 
-## Modèles
+## Models
 
-- **Region** - Région administrative (ex: Tanger-Tétouan)
-- **Complex** - Complexe de formation au sein d'une région
-- **Establishment** - Établissement spécifique au sein d'un complexe
-- **User** - Personnel avec rôles
-- **Training** - Programmes de formation
-- **Asset** - Actifs
-- **Room** - Salles physiques
+- **Region** - Administrative region (e.g., Tanger-Tetouan)
+- **Complex** - Training complex within a region
+- **Establishment** - Specific establishment within a complex
+- **User** - Staff with roles
+- **Training** - Training programs
+- **Asset** - Assets
+- **Room** - Physical rooms
 
-## Points de Terminaison API
+## API Endpoints
 
-Tous les points de terminaison (sauf connexion) nécessitent une authentification Sanctum via l'en-tête `Authorization: Bearer <token>`.
+All endpoints (except login) require Sanctum authentication via the `Authorization: Bearer <token>` header.
 
-### Authentification
+### Authentication
 
-| Méthode | Point de Terminaison | Description |
-|--------|---------------------|-------------|
-| POST | `/api/auth/login` | Connexion avec code/mot de passe |
-| POST | `/api/auth/logout` | Déconnexion (suppression du token) |
-| GET | `/api/user` | Obtenir l'utilisateur authentifié |
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| POST | `/api/auth/login` | Login with code/password |
+| POST | `/api/auth/logout` | Logout (revoke token) |
+| GET | `/api/user` | Get authenticated user |
 
-### Lecture Seule (Hiérarchie)
+### Read Only (Hierarchy)
 
-| Méthode | Point de Terminaison | Description |
-|--------|---------------------|-------------|
-| GET | `/api/regions` | Liste des régions |
-| GET | `/api/regions/{region}` | Obtenir une région |
-| GET | `/api/complexes` | Liste des complexes |
-| GET | `/api/complexes/{complex}` | Obtenir un complexe |
-| GET | `/api/establishments` | Liste des établissements |
-| GET | `/api/establishments/{establishment}` | Obtenir un établissement |
-| GET | `/api/users` | Liste du Personnel |
-| GET | `/api/users/{user}` | Obtenir un membre du Personnel |
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| GET | `/api/regions` | List regions |
+| GET | `/api/regions/{region}` | Get a region |
+| GET | `/api/complexes` | List complexes |
+| GET | `/api/complexes/{complex}` | Get a complex |
+| GET | `/api/establishments` | List establishments |
+| GET | `/api/establishments/{establishment}` | Get an establishment |
+| GET | `/api/users` | List staff |
+| GET | `/api/users/{user}` | Get a staff member |
 
-### Lecture + Écriture (Opérationnel)
+### Read + Write (Operational)
 
-| Méthode | Point de Terminaison | Description |
-|--------|---------------------|-------------|
-| GET | `/api/trainings` | Liste des formations |
-| GET | `/api/trainings/{training}` | Obtenir une formation |
-| POST | `/api/trainings` | Créer une formation |
-| PUT | `/api/trainings/{training}` | Modifier une formation |
-| GET | `/api/assets` | Liste des actifs |
-| GET | `/api/assets/{asset}` | Obtenir un actif |
-| POST | `/api/assets` | Créer un actif |
-| PUT | `/api/assets/{asset}` | Modifier un actif |
-| GET | `/api/rooms` | Liste des salles |
-| GET | `/api/rooms/{room}` | Obtenir une salle |
-| POST | `/api/rooms` | Créer une salle |
-| PUT | `/api/rooms/{room}` | Modifier une salle |
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| GET | `/api/trainings` | List trainings |
+| GET | `/api/trainings/{training}` | Get a training |
+| POST | `/api/trainings` | Create a training |
+| PUT | `/api/trainings/{training}` | Update a training |
+| GET | `/api/assets` | List assets |
+| GET | `/api/assets/{asset}` | Get an asset |
+| POST | `/api/assets` | Create an asset |
+| PUT | `/api/assets/{asset}` | Update an asset |
+| GET | `/api/rooms` | List rooms |
+| GET | `/api/rooms/{room}` | Get a room |
+| POST | `/api/rooms` | Create a room |
+| PUT | `/api/rooms/{room}` | Update a room |
 
-### Format de Réponse API
+### API Response Format
 
 ```json
 {
-  "message": "Description de l'opération.",
+  "message": "Operation description.",
   "payload": { ... }
 }
 ```
 
-### Exemple: Connexion
+### Example: Login
 
 ```bash
 curl -X POST https://api.ofppt.local/api/auth/login \
@@ -132,7 +132,7 @@ curl -X POST https://api.ofppt.local/api/auth/login \
 
 ```json
 {
-  "message": "Connexion réussie.",
+  "message": "Login successful.",
   "payload": {
     "id": 1,
     "code": "USR001",
@@ -145,90 +145,90 @@ curl -X POST https://api.ofppt.local/api/auth/login \
 }
 ```
 
-## Routes Web
+## Web Routes
 
-| Méthode | Contrôleur | Description |
+| Method | Controller | Description |
 |--------|----------|-------------|
-| GET/POST | `/regions` | CRUD régions |
-| GET/POST | `/complexes` | CRUD complexes |
-| GET/POST | `/establishments` | CRUD établissements |
-| GET/POST | `/users` | CRUD Personnel |
-| GET/POST | `/trainings` | CRUD formations |
-| GET/POST | `/assets` | CRUD actifs |
-| GET/POST | `/rooms` | CRUD salles |
-| GET/POST | `/profile` | Profil |
+| GET/POST | `/regions` | Regions CRUD |
+| GET/POST | `/complexes` | Complexes CRUD |
+| GET/POST | `/establishments` | Establishments CRUD |
+| GET/POST | `/users` | Staff CRUD |
+| GET/POST | `/trainings` | Trainings CRUD |
+| GET/POST | `/assets` | Assets CRUD |
+| GET/POST | `/rooms` | Rooms CRUD |
+| GET/POST | `/profile` | Profile |
 
-## Contrôle d'Accès Basé sur les Politiques
+## Policy-Based Access Control
 
-Chaque modèle possède une Politique correspondante qui enforce:
+Each model has a corresponding Policy that enforces:
 
-- **Admin** (`admin`): Accès complet à toutes les opérations
-- **DRRG**: Accès à sa région et en aval
-- **DRCX**: Accès à son complexe et en aval
-- **DRPD**: Accès à son établissement et en aval
-- **AGAD**: Lecture/écriture formations, actifs, salles dans son établissement
-- **FRMT**: Accès lecture seule au profil
+- **Admin** (`admin`): Full access to all operations
+- **DRRG**: Access to their region and downstream
+- **DRCX**: Access to their complex and downstream
+- **DRPD**: Access to their establishment and downstream
+- **AGAD**: Read/write trainings, assets, rooms in their establishment
+- **FRMT**: Read-only profile access
 
-### Comportement des Scopes
+### Scope Behavior
 
-| Modèle | Scope | Comportement |
-|-------|-------|------------|
-| Region | `forHead()` | Admin voit tout; DRRG voit seulement sa région |
-| Complex | `forHead()` | Admin voit tout; DRRG voit les complexes de sa région; DRCX voit seulement son complexe |
-| Establishment | `forHead()` | Admin voit tout; DRRG voit ceux de sa région; DRCX voit ceux de son complexe; DRPD/AGAD voient leur établissement |
-| Training | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD voient tout; FRMT ne voit rien |
-| Asset | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD voient tout; FRMT ne voit rien |
-| Room | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD voient tout; FRMT ne voit rien |
-| User | `forSuperior()` | Admin voit tout; DRRG voit sa région; DRCX voit son complexe; DRPD voit son établissement |
+| Model | Scope | Behavior |
+|-------|-------|---------|
+| Region | `forHead()` | Admin sees all; DRRG sees only their region |
+| Complex | `forHead()` | Admin sees all; DRRG sees their region's complexes; DRCX sees only their complex |
+| Establishment | `forHead()` | Admin sees all; DRRG sees those in their region; DRCX sees those in their complex; DRPD/AGAD see their establishment |
+| Training | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD see all; FRMT sees nothing |
+| Asset | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD see all; FRMT sees nothing |
+| Room | `forUser()` | Admin/DRRG/DRCX/DRPD/AGAD see all; FRMT sees nothing |
+| User | `forSuperior()` | Admin sees all; DRRG sees their region; DRCX sees their complex; DRPD sees their establishment |
 
-## Fonctionnalités du Tableau de Bord par Rôle
+## Dashboard Features by Role
 
-### Administrateur
-- **Régions**: CRUD total (filtrer par nom)
-- **Complexes**: CRUD total (filtrer par nom, régions)
-- **Établissements**: CRUD total (filtrer par nom, régions, complexes)
-- **Personnel**: CRUD total y compris mots de passe (filtrer par nom, régions, complexes, établissements)
-- **Formations**: CRUD total (filtrer par nom, régions, complexes, établissements)
-- **Actifs**: CRUD total (filtrer par nom, régions, complexes, établissements)
-- **Salles**: CRUD total (filtrer par nom, régions, complexes, établissements)
+### Administrator
+- **Regions**: Full CRUD (filter by name)
+- **Complexes**: Full CRUD (filter by name, regions)
+- **Establishments**: Full CRUD (filter by name, regions, complexes)
+- **Staff**: Full CRUD including passwords (filter by name, regions, complexes, establishments)
+- **Trainings**: Full CRUD (filter by name, regions, complexes, establishments)
+- **Assets**: Full CRUD (filter by name, regions, complexes, establishments)
+- **Rooms**: Full CRUD (filter by name, regions, complexes, establishments)
 
-### DRRG (Directeur Régional)
-- **Son Profil**: Modifier infos personnelles
-- **Sa Région**: CRUD sa région
-- **Ses Complexes**: CRUD ses complexes (filtrer par nom)
-- **Ses Établissements**: CRUD ses établissements (filtrer par nom, complexes)
-- **Son Personnel**: CRUD son personnel y compris mots de passe (filtrer par nom, complexes, établissements)
-- **Ses Formations**: CRUD ses formations (filtrer par nom, complexes, établissements)
-- **Ses Actifs**: CRUD ses actifs (filtrer par nom, complexes, établissements)
-- **Ses Salles**: CRUD ses salles (filtrer par nom, complexes, établissements)
+### DRRG (Regional Director)
+- **Their Profile**: Edit personal info
+- **Their Region**: CRUD their region
+- **Their Complexes**: CRUD their complexes (filter by name)
+- **Their Establishments**: CRUD their establishments (filter by name, complexes)
+- **Their Staff**: CRUD their staff including passwords (filter by name, complexes, establishments)
+- **Their Trainings**: CRUD their trainings (filter by name, complexes, establishments)
+- **Their Assets**: CRUD their assets (filter by name, complexes, establishments)
+- **Their Rooms**: CRUD their rooms (filter by name, complexes, establishments)
 
-### DRCX (Directeur de Complexe)
-- **Son Profil**: Modifier infos personnelles
-- **Son Complexe**: CRUD son complexe
-- **Ses Établissements**: CRUD ses établissements (filtrer par nom)
-- **Son Personnel**: CRUD son personnel y compris mots de passe (filtrer par nom, établissements)
-- **Ses Formations**: CRUD ses formations (filtrer par nom, établissements)
-- **Ses Actifs**: CRUD ses actifs (filtrer par nom, établissements)
-- **Ses Salles**: CRUD ses salles (filtrer par nom, établissements)
+### DRCX (Complex Director)
+- **Their Profile**: Edit personal info
+- **Their Complex**: CRUD their complex
+- **Their Establishments**: CRUD their establishments (filter by name)
+- **Their Staff**: CRUD their staff including passwords (filter by name, establishments)
+- **Their Trainings**: CRUD their trainings (filter by name, establishments)
+- **Their Assets**: CRUD their assets (filter by name, establishments)
+- **Their Rooms**: CRUD their rooms (filter by name, establishments)
 
-### DRPD (Directeur Pédagogique)
-- **Son Profil**: Modifier infos personnelles
-- **Son Établissement**: CRUD son établissement
-- **Son Personnel**: CRUD son personnel y compris mots de passe (filtrer par nom)
-- **Ses Formations**: CRUD ses formations (filtrer par nom)
-- **Ses Actifs**: CRUD ses actifs (filtrer par nom)
-- **Ses Salles**: CRUD ses salles (filtrer par nom)
+### DRPD (Pedagogical Director)
+- **Their Profile**: Edit personal info
+- **Their Establishment**: CRUD their establishment
+- **Their Staff**: CRUD their staff including passwords (filter by name)
+- **Their Trainings**: CRUD their trainings (filter by name)
+- **Their Assets**: CRUD their assets (filter by name)
+- **Their Rooms**: CRUD their rooms (filter by name)
 
-### AGAD (Agent Administratif)
-- **Son Profil**: Modifier infos personnelles
-- **Ses Formations**: CRUD les formations de son établissement (filtrer par nom)
-- **Ses Actifs**: CRUD les actifs de son établissement (filtrer par nom)
-- **Ses Salles**: CRUD les salles de son établissement (filtrer par nom)
+### AGAD (Administrative Agent)
+- **Their Profile**: Edit personal info
+- **Their Trainings**: CRUD their establishment's trainings (filter by name)
+- **Their Assets**: CRUD their establishment's assets (filter by name)
+- **Their Rooms**: CRUD their establishment's rooms (filter by name)
 
-### FRMT (Formateur)
-- **Son Profil**: Modifier infos personnelles
+### FRMT (Trainer)
+- **Their Profile**: Edit personal info
 
-## Stack Technologique
+## Tech Stack
 
 - **Framework**: Laravel 12
 - **Frontend**: React + Inertia
@@ -236,7 +236,7 @@ Chaque modèle possède une Politique correspondante qui enforce:
 - **Database**: MySQL
 - **State**: React Query (via Inertia)
 
-## Prérequis
+## Prerequisites
 
 - PHP 8.2+
 - MySQL 8.0+
@@ -245,62 +245,47 @@ Chaque modèle possède une Politique correspondante qui enforce:
 ## Installation
 
 ```bash
-# Installer les dépendances
+# Install dependencies
 composer install
 npm install
 
-# Configurer l'environnement
+# Configure environment
 cp .env.example .env
-# Modifier .env avec les identifiants de base de données
+# Edit .env with database credentials
 
-# Générer la clé
+# Generate key
 php artisan key:generate
 
-# Exécuter les migrations
+# Run migrations
 php artisan migrate
 
-# Peuppler la base de données
+# Seed the database
 php artisan db:seed
 
-# Démarrer le développement
+# Start development
 composer run dev
 ```
 
-## Structure des Répertoires
+## Directory Structure
 
 ```
 app/
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Api/          # Contrôleurs API REST
-│   │   └── Web/          # Contrôleurs Web (Inertia)
+│   │   ├── Api/          # REST API controllers
+│   │   └── Web/          # Web controllers (Inertia)
 │   ├── Middleware/
-│   └── Resources/        # Ressources JSON API
+│   └── Resources/        # JSON API Resources
 ├── Models/
 │   ├── Concerns/        # Traits (ForUserScope)
 │   └── *.php
-├── Policies/            # Politiques d'autorisation
+├── Policies/            # Authorization policies
 routes/
-├── api.php             # Routes API REST
-└── web.php            # Routes Web
+├── api.php             # REST API routes
+└── web.php            # Web routes
 ```
 
-## Notes de Production
+## AI Transparency
 
-Ce projet est un **MVP (Minimum Viable Product)**. Avant une mise en production, les éléments suivants doivent être implémentés :
-
-- Gestion des erreurs robuste
-- Tests unitaires et d'intégration
-- Rate limiting
-- Filtrage avancé
-- Pagination
-- Validation des entrées avancé
-- Logging et monitoring
-- Optimisation des performances avancé
-- Configuration de sécurité (CORS, HTTPS, etc.)
-
-## Transparence IA
-
-- **Développement artisanal** : Backend, décisions d'architecture.
-- **Développement assisté par LLM** : Frontend.
-
+- **Crafted development**: Backend, architecture decisions.
+- **LLM-assisted development**: Frontend.
